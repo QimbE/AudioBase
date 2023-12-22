@@ -23,10 +23,10 @@ jobs:
           dotnet-version: '8.0.x'
       
       - name: Restore
-        run: dotnet restore ./AudioBaseAPI.sln
+        run: dotnet restore ./AudioBaseAPI/AudioBaseAPI.sln
         
       - name: Build
-        run: dotnet build ./AudioBaseAPI.sln --configuration Release --no-restore
+        run: dotnet build ./AudioBaseAPI/AudioBaseAPI.sln --configuration Release --no-restore
         
       - name: Test
-        run: dotnet test ./AudioBaseAPI.sln --configuration Release --no-restore --no-build
+        run: dotnet test ./AudioBaseAPI/AudioBaseAPI.sln --configuration Release --no-restore --no-build
