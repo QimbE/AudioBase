@@ -6,29 +6,6 @@ networks:
     driver: bridge
 
 services:
-  musiccatalog.api:
-    image: audiobaseapi
-    depends_on:
-      - "audiobase_db"
-      - "redis"
-    container_name: audiobase-services
-    ports:
-      - "8088:80"
-    build:
-      context: .
-      dockerfile: AudioBaseAPI/Dockerfile
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=audiobase_db;Port=5432;Database=${POSTGRES_DB};Username=postgres;Password=${POSTGRES_PASSWORD}
-      - ConnectionStrings__CacheConnection=redis:6379
-      - ASPNETCORE_URLS=http://+:80
-      - ASPNETCORE_ENVIRONMENT=Development
-      - JwtSettings__Issuer=${JWT_ISSUER}
-      - JwtSettings__Audience=${JWT_AUDIENCE}
-      - JwtSettings__Key=${JWT_KEY}
-      - JwtSettings__ExpiryTime=${JWT_EXPIRY_TIME}
-      - Cors__AllowedOrigins=${CORS_ALLOWED_ORIGINS}
-    networks:
-      - dev
   audiobase_db:
     image: postgres:latest
     container_name: audiobase_db
