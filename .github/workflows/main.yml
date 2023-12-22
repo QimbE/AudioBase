@@ -1,0 +1,32 @@
+name: Tests💪💪🔥😈
+
+on: 
+  pull_request:
+  workflow_dispatch:
+  push:
+      branches:
+        - main
+
+env:
+  DOTNET_VERSION: "8.0.x"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with: 
+          dotnet-version: '8.0.x'
+      
+      - name: Restore
+        run: dotnet restore ./AudioBaseAPI.sln
+        
+      - name: Build
+        run: dotnet build ./AudioBaseAPI.sln --configuration Release --no-restore
+        
+      - name: Test
+        run: dotnet test ./AudioBaseAPI.sln --configuration Release --no-restore --no-build
