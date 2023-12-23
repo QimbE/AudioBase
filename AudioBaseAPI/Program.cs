@@ -1,6 +1,7 @@
 using Application;
 using Carter;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Presentation;
 using Serilog;
 
@@ -14,7 +15,7 @@ public class Program
 
         builder.Services
             .AddApplication()
-            .AddInfrastructure()
+            .AddInfrastructure(builder.Configuration)
             .AddPresentation();
         
         builder.Services.AddEndpointsApiExplorer();
@@ -64,6 +65,18 @@ public class Program
         app.UseSerilogRequestLogging();
 
         //TODO: app.MapCarter(); app.MapGraphQL();
+        
+        //Auto Db migration applier
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            if (context.Database.GetMigrations().Any() && context.Database.GetPendingMigrations().Any())
+            {
+                context.Database.Migrate();
+            }
+        }
         
         app.Run();
     }
