@@ -58,17 +58,13 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
-        app.UseAuthentication();
-
-        app.UseAuthorization();
+        
+        //TODO: app.UseAuthentication(); app.UseAuthorization();
 
         app.UseSerilogRequestLogging();
 
-        app.MapCarter();
-
-        app.MapGraphQL();
-
+        //TODO: app.MapCarter(); app.MapGraphQL();
+        
         app.Run();
     }
 }
