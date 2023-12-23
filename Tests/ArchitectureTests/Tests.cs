@@ -6,11 +6,11 @@ namespace ArchitectureTests;
 
 public class ArchitectureTests
 {
-    private const string DomainNamespace = "Domain";
-    private const string ApplicationNamespace = "Application";
-    private const string InfrastructureNamespace = "Infrastructure";
-    private const string PresentationNamespace = "Presentation";
-    private const string WebNamespace = "AudioBaseAPI";
+    private const string DomainNamespace = "Domain.dll";
+    private const string ApplicationNamespace = "Application.dll";
+    private const string InfrastructureNamespace = "Infrastructure.dll";
+    private const string PresentationNamespace = "Presentation.dll";
+    private const string WebNamespace = "AudioBaseAPI.dll";
     
     [Fact]
     public void Domain_Should_Not_HaveDependencyOnOtherProjects()
