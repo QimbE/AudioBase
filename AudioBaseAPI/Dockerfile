@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["AudioBaseAPI/AudioBaseAPI.csproj", "AudioBaseAPI/"]
+COPY ["Presentation/Presentation.csproj", "Presentation/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Application/Application.csproj", "Application/"]
 RUN dotnet restore "AudioBaseAPI/AudioBaseAPI.csproj"
 COPY . .
 WORKDIR "/src/AudioBaseAPI"
