@@ -28,13 +28,15 @@ public class RefreshToken
     /// </summary>
     public DateTime ExpirationDate { get; protected set; }
     
+    public User Owner { get; protected set; }
+    
     /// <summary>
     /// Token life time
     /// </summary>
     public const int LifeTime = 30;
 
-    protected RefreshToken(string value, DateTime expirationDate)
-        : base(Guid.NewGuid())
+    protected RefreshToken(string value, DateTime expirationDate, Guid userId)
+        : base(userId)
     {
         Value = value;
         ExpirationDate = expirationDate;
@@ -49,13 +51,15 @@ public class RefreshToken
     /// Create an instance of RefreshToken
     /// </summary>
     /// <param name="value">token value</param>
+    /// <param name="userId">token's owner id</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">on attempt to create token consists of null or blank string</exception>
-    public static RefreshToken Create(string value)
+    public static RefreshToken Create(string value, Guid userId)
     {
         return new(
             value,
-            DateTime.UtcNow.AddDays(LifeTime)
+            DateTime.UtcNow.AddDays(LifeTime),
+            userId
             );
     }
 

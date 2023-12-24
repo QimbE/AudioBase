@@ -21,7 +21,6 @@ public class User
     }
 
     private string _email;
-
     public string Email
     {
         get => _email;
@@ -32,7 +31,6 @@ public class User
     }
 
     private string _password;
-
     /// <summary>
     /// Password hash
     /// </summary>
@@ -46,7 +44,6 @@ public class User
         } }
 
     private int _roleId;
-
     public int RoleId
     {
         get => _roleId;
@@ -59,8 +56,6 @@ public class User
     }
 
     public Role Role { get; protected set; }
-    
-    public Guid RefreshTokenId { get; protected set; }
 
     public RefreshToken RefreshToken { get; protected set; }
 
@@ -69,26 +64,24 @@ public class User
         
     }
 
-    protected User(string name, string email, string password, int roleId, Guid refreshTokenId)
+    protected User(string name, string email, string password, int roleId)
     {
         Name = name;
         Email = email;
         Password = password;
         RoleId = roleId;
-        RefreshTokenId = refreshTokenId;
     }
 
-    public User Create(string name, string email, string password, int roleId, Guid refreshTokenId)
+    public User Create(string name, string email, string password, int roleId)
     {
-        return new(name, email, password, roleId, refreshTokenId);
+        return new(name, email, password, roleId);
     }
 
-    public void Update(string name, string email, string password, int roleId, Guid refreshTokenId)
+    public void Update(string name, string email, string password, int roleId)
     {
         Name = name;
         Email = email;
         Password = password;
         RoleId = roleId;
-        RefreshTokenId = refreshTokenId;
     }
 }
