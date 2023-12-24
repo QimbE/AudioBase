@@ -7,7 +7,7 @@ namespace Domain.Users;
 /// Access refresh token for users
 /// </summary>
 public class RefreshToken
-    : Entity
+    : Entity<RefreshToken>
 {
     private string _value;
     
@@ -69,19 +69,8 @@ public class RefreshToken
         ExpirationDate = DateTime.UtcNow.AddDays(LifeTime);
     }
 
-    public override int GetHashCode()
-    {
-        return this.Id.GetHashCode();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is RefreshToken tkn &&
-               tkn.Id == this.Id;
-    }
-
     public override string ToString()
     {
-        return this.Value;
+        return base.ToString() + $" Value: {this.Value}";
     }
 }
