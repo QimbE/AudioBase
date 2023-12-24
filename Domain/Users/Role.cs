@@ -8,6 +8,6 @@ namespace Domain.Users;
 public class Role(string name, int value)
     : SmartEnum<Role>(name, value)
 {
-    public static Role DefaultUser = new(nameof(DefaultUser), 0);
+    public static Role DefaultUser = new(nameof(DefaultUser), 1);
     // TODO: add more roles
 }
