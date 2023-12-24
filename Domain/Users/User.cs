@@ -8,7 +8,7 @@ namespace Domain.Users;
 /// Application user
 /// </summary>
 public class User
-    : Entity
+    : Entity<User>
 {
     private string _name;
     public string Name
@@ -83,22 +83,5 @@ public class User
         Email = email;
         Password = password;
         RoleId = roleId;
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Id.GetHashCode();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        // If the same type and the same Id
-        return obj is User usr &&
-               usr.Id == this.Id;
-    }
-
-    public override string ToString()
-    {
-        return $"Entity of type {nameof(User)} with Id = {this.Id}";
     }
 }
