@@ -68,4 +68,20 @@ public class RefreshToken
         Value = value;
         ExpirationDate = DateTime.UtcNow.AddDays(LifeTime);
     }
+
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is RefreshToken tkn &&
+               tkn.Id == this.Id;
+    }
+
+    public override string ToString()
+    {
+        return this.Value;
+    }
 }

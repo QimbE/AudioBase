@@ -50,8 +50,7 @@ public class User
         protected set
         {
             // if there is no such a role
-            Role.List.Throw().IfNotContains(Role.FromValue(value));
-            _roleId = value;
+            _roleId = value.Throw().IfFalse(x => Role.TryFromValue(value, out var _));
         }
     }
 
@@ -65,6 +64,7 @@ public class User
     }
 
     protected User(string name, string email, string password, int roleId)
+        : base(Guid.NewGuid())
     {
         Name = name;
         Email = email;
@@ -72,7 +72,7 @@ public class User
         RoleId = roleId;
     }
 
-    public User Create(string name, string email, string password, int roleId)
+    public static User Create(string name, string email, string password, int roleId)
     {
         return new(name, email, password, roleId);
     }
@@ -83,5 +83,22 @@ public class User
         Email = email;
         Password = password;
         RoleId = roleId;
+    }
+
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        // If the same type and the same Id
+        return obj is User usr &&
+               usr.Id == this.Id;
+    }
+
+    public override string ToString()
+    {
+        return $"Entity of type {nameof(User)} with Id = {this.Id}";
     }
 }
