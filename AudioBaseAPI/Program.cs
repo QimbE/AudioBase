@@ -64,7 +64,8 @@ public class Program
 
         app.UseSerilogRequestLogging();
 
-        //TODO: app.MapCarter(); app.MapGraphQL();
+        //TODO: app.MapCarter();
+        app.MapGraphQL();
         
         //Auto Db migration applier
         using (var scope = app.Services.CreateScope())
