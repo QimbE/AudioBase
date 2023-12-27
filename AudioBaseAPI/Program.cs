@@ -31,7 +31,7 @@ public class Program
         
         var app = builder.Build();
 
-        //TODO: Add Global exception handling
+        app.UseExceptionHandler(_ => { });
         
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
