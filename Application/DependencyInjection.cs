@@ -1,4 +1,5 @@
 ﻿using Application.Behaviors;
+using Application.ExceptionHandlers;
 using Application.GraphQL;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,8 @@ public static class DependencyInjection
             configuration.RegisterServicesFromAssembly(assembly);
             configuration.AddPipelineBehaviors();
         });
+
+        services.AddExceptionHandler<GlobalExceptionHandler>();
         
         // GraphQL configuration
         services.AddGraphQLServer()
