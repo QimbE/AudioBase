@@ -1,6 +1,9 @@
 ﻿using Application.DataAccess;
 using Domain.Users;
+using HotChocolate;
 using HotChocolate.Authorization;
+using HotChocolate.Data;
+using HotChocolate.Types;
 
 namespace Application.GraphQL;
 

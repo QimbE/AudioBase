@@ -1,4 +1,5 @@
 ﻿using Application.DataAccess;
+using HotChocolate;
 using HotChocolate.Execution;
 using Throw;
 

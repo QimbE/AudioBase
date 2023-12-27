@@ -1,4 +1,5 @@
 ﻿using Domain.Users;
+using HotChocolate.Types;
 
 namespace Application.GraphQL.TypeConfigurations;
 
