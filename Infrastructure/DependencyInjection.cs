@@ -1,4 +1,6 @@
-﻿using Application.DataAccess;
+﻿using Application.Authentication;
+using Application.DataAccess;
+using Infrastructure.Authentication;
 using Infrastructure.Cache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +35,10 @@ public static class DependencyInjection
 
         // Cache service
         services.AddScoped<ICacheService, RedisCacheService>();
+
+        services.AddScoped<IHashProvider, HashProvider>();
+
+        services.AddScoped<IJwtProvider, JwtProvider>();
         
         return services;
     }
