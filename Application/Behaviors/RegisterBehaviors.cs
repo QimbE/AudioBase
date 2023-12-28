@@ -1,4 +1,5 @@
-﻿using Application.Authentication.Register;
+﻿using Application.Authentication.Login;
+using Application.Authentication.Register;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,7 +26,8 @@ internal static class RegisterBehaviors
     {
         // add validation pipeline here here
         return config
-            .AddValidationBehavior<RegisterCommand, UserResponse>();
+            .AddValidationBehavior<RegisterCommand, UserResponse>()
+            .AddValidationBehavior<LoginCommand, UserResponse>();
     }
     
     /// <summary>
