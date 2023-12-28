@@ -7,7 +7,14 @@ public class HashProvider: IHashProvider
     public Task<string> HashPassword(string password)
     {
         return Task.FromResult(
-            BCrypt.Net.BCrypt.HashPassword(password)
+            BCrypt.Net.BCrypt.EnhancedHashPassword(password)
+            );
+    }
+
+    public Task<bool> VerifyPassword(string password, string passwordHash)
+    {
+        return Task.FromResult(
+            BCrypt.Net.BCrypt.EnhancedVerify(password, passwordHash)
             );
     }
 }
