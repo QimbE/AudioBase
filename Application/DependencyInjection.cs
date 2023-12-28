@@ -18,10 +18,10 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
 
-        services.AddMediatR(configuration =>
+        services.AddMediatR(config =>
         {
-            configuration.RegisterServicesFromAssembly(assembly);
-            configuration.AddPipelineBehaviors();
+            config.RegisterServicesFromAssembly(assembly);
+            config.AddPipelineBehaviors();
         });
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
