@@ -2,8 +2,10 @@ using Application;
 using Carter;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Presentation;
 using Serilog;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace AudioBaseAPI;
 
@@ -14,13 +16,25 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddApplication()
+            .AddApplication(builder.Configuration)
             .AddInfrastructure(builder.Configuration)
             .AddPresentation();
         
         builder.Services.AddEndpointsApiExplorer();
         
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("oauth2", new()
+            {
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
+            });
+            
+            options.OperationFilter<SecurityRequirementsOperationFilter>();
+        });
 
         builder.Host.UseSerilog((context, configuration) =>
             configuration.ReadFrom.Configuration(context.Configuration));
@@ -60,7 +74,9 @@ public class Program
 
         app.UseHttpsRedirection();
         
-        //TODO: app.UseAuthentication(); app.UseAuthorization();
+        app.UseAuthentication();
+        
+        app.UseAuthorization();
 
         app.UseSerilogRequestLogging();
 

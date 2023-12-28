@@ -19,6 +19,7 @@
         </PackageReference>
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
     </ItemGroup>
 
     <ItemGroup>
