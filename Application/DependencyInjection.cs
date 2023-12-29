@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Application.Authentication.Extensions;
 using Application.Behaviors;
 using Application.ExceptionHandlers;
 using Application.GraphQL;
@@ -56,6 +57,8 @@ public static class DependencyInjection
         });
         
         services.AddAuthorization();
+
+        services.AddRoleAuthorizationPolicies();
         
         return services;
     }
