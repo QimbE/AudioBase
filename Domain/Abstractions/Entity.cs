@@ -8,6 +8,8 @@ public abstract class Entity
     public Guid Id { get; protected set;}
     
     private readonly List<DomainEvent> _domainEvents = [];
+
+    public List<DomainEvent> DomainEvents => _domainEvents;
     
     protected Entity()
     {
