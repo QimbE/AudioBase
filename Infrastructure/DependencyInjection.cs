@@ -1,5 +1,6 @@
 ﻿using Application.DataAccess;
 using Infrastructure.Cache;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -2,7 +2,7 @@
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure;
+namespace Infrastructure.Data;
 
 /// <summary>
 /// Main AudioBase Db context
