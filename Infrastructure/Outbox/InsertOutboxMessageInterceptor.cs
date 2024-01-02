@@ -39,6 +39,9 @@ public sealed class InsertOutboxMessageInterceptor: SaveChangesInterceptor
             .SelectMany<Entity, INotification>(entity =>
             {
                 List<INotification> domainEvents = [..entity.DomainEvents];
+                
+                entity.ClearEventList();
+                
                 return domainEvents;
             })
             .Select(domainEvent => new OutboxMessage(
