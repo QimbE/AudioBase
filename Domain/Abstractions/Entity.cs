@@ -1,4 +1,6 @@
-﻿namespace Domain.Abstractions;
+﻿using Throw;
+
+namespace Domain.Abstractions;
 
 /// <summary>
 /// Represents some abstract entity with uknown type
@@ -8,6 +10,8 @@ public abstract class Entity
     public Guid Id { get; protected set;}
     
     private readonly List<DomainEvent> _domainEvents = [];
+
+    public List<DomainEvent> DomainEvents => _domainEvents;
     
     protected Entity()
     {
@@ -25,15 +29,9 @@ public abstract class Entity
     /// <param name="domainEvent">Some domain event</param>
     protected void RaiseEvent(DomainEvent domainEvent)
     {
-        _domainEvents.Add(domainEvent);
-    }
-
-    /// <summary>
-    /// Clears the list of events
-    /// </summary>
-    protected void ClearEvents()
-    {
-        _domainEvents.Clear();
+        _domainEvents.Add(
+            domainEvent.ThrowIfNull()
+            );
     }
 }
 
