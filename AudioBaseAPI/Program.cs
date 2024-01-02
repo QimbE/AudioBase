@@ -47,16 +47,13 @@ public class Program
 
         app.UseExceptionHandler(_ => { });
         
-        // Configure the HTTP request pipeline.
+        app.ApplyMigrations();
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-        }
-        
-        //Cors policies
-        if (app.Environment.IsDevelopment())
-        {
+            
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -83,18 +80,19 @@ public class Program
         //TODO: app.MapCarter();
         app.MapGraphQL();
         
-        //Auto Db migration applier
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-
-            var context = services.GetRequiredService<ApplicationDbContext>();
-            if (context.Database.GetMigrations().Any() && context.Database.GetPendingMigrations().Any())
-            {
-                context.Database.Migrate();
-            }
-        }
-        
         app.Run();
+    }
+}
+
+public static class MigrationExtensions
+{
+    public static void ApplyMigrations(this IApplicationBuilder app)
+    {
+        using IServiceScope scope = app.ApplicationServices.CreateScope();
+
+        using ApplicationDbContext dbContext = scope.ServiceProvider
+            .GetRequiredService<ApplicationDbContext>();
+        
+        dbContext.Database.Migrate();
     }
 }
