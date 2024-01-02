@@ -24,7 +24,17 @@ public class EntityTests
         {
             return new(test);
         }
+        
+        public static EntityStub Create(int test, DomainEvent domainEvent)
+        {
+            var entity = new EntityStub(test);
+            entity.RaiseEvent(domainEvent);
+            return entity;
+        }
     }
+
+    public record EventStub()
+        : DomainEvent(Guid.NewGuid());
     
     [Fact]
     public void Equals_ShouldReturnFalse_OnCompareWithDifferentType()
@@ -68,5 +78,26 @@ public class EntityTests
         
         // Assert
         res.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RaiseEvent_ShouldThrowException_IfTheEventIsNull()
+    {
+        // Arrange
+        var action = () => EntityStub.Create(1, null!);
+        
+        // Assert
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void RaiseEvent_ShouldRaiseEvent_IfTheEventIsValid()
+    {
+        // Arrange
+        var eventStub = new EventStub();
+        var entity = EntityStub.Create(1, eventStub);
+        
+        // Assert
+        entity.DomainEvents.Should().Contain(eventStub);
     }
 }
