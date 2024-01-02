@@ -40,7 +40,7 @@ public class JwtProvider: IJwtProvider
             null,
             DateTime.UtcNow.Add(
                 TimeSpan.Parse(
-                    _configuration.GetSection("JwtSettings:ExpiryTime").Value!
+                    settings["ExpiryTime"]!
                 )
             ),
             signingCredentials
