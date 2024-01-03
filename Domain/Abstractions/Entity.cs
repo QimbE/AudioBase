@@ -1,19 +1,58 @@
-﻿namespace Domain.Abstractions;
+﻿using Throw;
 
-public abstract class Entity<TEntity>
-    : IEquatable<Entity<TEntity>> 
-    where TEntity: Entity<TEntity>
+namespace Domain.Abstractions;
+
+/// <summary>
+/// Represents some abstract entity with uknown type
+/// </summary>
+public abstract class Entity
 {
     public Guid Id { get; protected set;}
+    
+    private readonly List<DomainEvent> _domainEvents = [];
+
+    public List<DomainEvent> DomainEvents => _domainEvents;
+    
+    protected Entity()
+    {
+        
+    }
+    
+    protected Entity(Guid id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
+    /// Raises new event connected to this entity
+    /// </summary>
+    /// <param name="domainEvent">Some domain event</param>
+    protected void RaiseEvent(DomainEvent domainEvent)
+    {
+        _domainEvents.Add(
+            domainEvent.ThrowIfNull()
+            );
+    }
+}
+
+/// <summary>
+/// Some entity with specific type.
+/// </summary>
+/// <typeparam name="TEntity">Actual entity class</typeparam>
+public abstract class Entity<TEntity>
+    : Entity, IEquatable<Entity<TEntity>> 
+    where TEntity: Entity<TEntity>
+{
 
     protected Entity()
     {
         
     }
 
-    public Entity(Guid id)
+    protected Entity(Guid id)
+        : base(id)
     {
-        Id = id;
+        
     }
 
     public override bool Equals(object? obj)
