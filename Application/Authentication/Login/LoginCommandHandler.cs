@@ -24,7 +24,10 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
         var userFromDb = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)
-            .SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+            .SingleOrDefaultAsync(u => 
+                string.Equals(u.Email, request.Email, StringComparison.InvariantCultureIgnoreCase),
+                cancellationToken
+                );
         
         // if the password is incorrect or the email is invalid
         if (userFromDb is null || 
