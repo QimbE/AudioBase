@@ -100,4 +100,18 @@ public class EntityTests
         // Assert
         entity.DomainEvents.Should().Contain(eventStub);
     }
+    
+    [Fact]
+    public void ClearEventList_ShouldClearEventList()
+    {
+        // Arrange
+        var eventStub = new EventStub();
+        var entity = EntityStub.Create(1, eventStub);
+        
+        // Act
+        entity.ClearEventList();
+        
+        // Assert
+        entity.DomainEvents.Count.Should().Be(0);
+    }
 }

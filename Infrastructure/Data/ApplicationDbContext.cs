@@ -1,8 +1,9 @@
 ﻿using Application.DataAccess;
 using Domain.Users;
+using Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure;
+namespace Infrastructure.Data;
 
 /// <summary>
 /// Main AudioBase Db context
@@ -23,6 +24,11 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
     /// User access refresh tokens
     /// </summary>
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    
+    /// <summary>
+    /// Integration and domain event list.
+    /// </summary>
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         :base(options)
