@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationTests;
