@@ -14,8 +14,7 @@ public class RegisterCommandHandlerTests: AuthTestingBase
     public async Task Register_Should_ReturnException_OnDuplicateEmail(string firstEmail, string secondEmail)
     {
         // Arrange
-        await Context.Database.EnsureDeletedAsync();
-        await Context.Database.EnsureCreatedAsync();
+        await RecreateDbContextAsync();
 
         
         Context.Users.Add(User.Create("123", firstEmail, "123", 1));
@@ -43,8 +42,7 @@ public class RegisterCommandHandlerTests: AuthTestingBase
     public async Task Register_Should_ReturnUserResponse_OnValidRequest()
     {
         // Arrange
-        await Context.Database.EnsureDeletedAsync();
-        await Context.Database.EnsureCreatedAsync();
+        await RecreateDbContextAsync();
 
         Context.Users.Add(User.Create("123", "blabla@mail.ru", "123", 1));
         await Context.SaveChangesAsync();

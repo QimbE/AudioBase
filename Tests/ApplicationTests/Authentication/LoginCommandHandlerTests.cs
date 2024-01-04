@@ -19,8 +19,7 @@ public class LoginCommandHandlerTests: AuthTestingBase
         )
     {
         // Arrange
-        await Context.Database.EnsureDeletedAsync();
-        await Context.Database.EnsureCreatedAsync();
+        await RecreateDbContextAsync();
 
         var registerRequest = new RegisterCommand("123", validEmail, validPassword);
         var loginRequest = new LoginCommand(actualEmail, actualPassword);
@@ -48,8 +47,7 @@ public class LoginCommandHandlerTests: AuthTestingBase
     public async Task Login_Should_ReturnUserResponse_OnValidCredentials()
     {
         // Arrange
-        await Context.Database.EnsureDeletedAsync();
-        await Context.Database.EnsureCreatedAsync();
+        await RecreateDbContextAsync();
 
         var email = "1@1.ru";
         var password = "bimbimbim123";

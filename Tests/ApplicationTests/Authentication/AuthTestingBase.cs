@@ -35,6 +35,13 @@ public abstract class AuthTestingBase
         JwtProvider = new JwtProvider(configMock);
         HashProvider = new HashProvider();
     }
+
+    public Task RecreateDbContextAsync()
+    {
+        Context.Database.EnsureDeleted();
+        Context.Database.EnsureCreated();
+        return Task.CompletedTask;
+    }
     
     ~AuthTestingBase()
     {
