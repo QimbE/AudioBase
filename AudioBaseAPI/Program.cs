@@ -1,6 +1,7 @@
 using Application;
 using Carter;
 using Infrastructure;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Presentation;

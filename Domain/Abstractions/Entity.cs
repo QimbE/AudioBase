@@ -1,4 +1,5 @@
-﻿using Throw;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Throw;
 
 namespace Domain.Abstractions;
 
@@ -11,6 +12,9 @@ public abstract class Entity
     
     private readonly List<DomainEvent> _domainEvents = [];
 
+    // EF core starts tracking every specific Entity child as this very type if there is specific configuration file for Entity.
+    // So this attribute is ugly, but the only solution.
+    [NotMapped] 
     public List<DomainEvent> DomainEvents => _domainEvents;
     
     protected Entity()
@@ -32,6 +36,11 @@ public abstract class Entity
         _domainEvents.Add(
             domainEvent.ThrowIfNull()
             );
+    }
+
+    public void ClearEventList()
+    {
+        _domainEvents.Clear();
     }
 }
 
