@@ -33,7 +33,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
         var hash = await _hashProvider.HashPassword(request.Password);
 
         // new user
-        var user = User.Create(request.Name, request.Email, request.Password, Role.DefaultUser);
+        var user = User.Create(request.Name, request.Email, hash, Role.DefaultUser);
 
         _context.Users.Add(user);
 
