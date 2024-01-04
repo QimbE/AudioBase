@@ -33,4 +33,17 @@ public class RefreshTokenTests
 
         token.Value.Should().BeEquivalentTo(validString);
     }
+
+    [Fact]
+    public void MakeExpire_Should_MakeTokenExpire()
+    {
+        // Arrange
+        var token = RefreshToken.Create("random123", Guid.NewGuid());
+        
+        // Act
+        token.MakeExpire();
+        
+        // Assert
+        token.ExpirationDate.Should().BeBefore(DateTime.UtcNow.AddSeconds(1));
+    }
 }
