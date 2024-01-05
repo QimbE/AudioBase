@@ -1,4 +1,5 @@
 ﻿using Application.Authentication.Login;
+using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
 using MediatR;
@@ -29,7 +30,8 @@ internal static class RegisterBehaviors
         return config
             .AddValidationBehavior<RegisterCommand, UserResponse>()
             .AddValidationBehavior<LoginCommand, UserResponse>()
-            .AddValidationBehavior<RefreshCommand, TokenResponse>();
+            .AddValidationBehavior<RefreshCommand, TokenResponse>()
+            .AddValidationBehavior<LogoutCommand, bool>();
     }
     
     /// <summary>
