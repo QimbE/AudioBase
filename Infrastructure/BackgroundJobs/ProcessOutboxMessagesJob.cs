@@ -10,7 +10,6 @@ using Quartz;
 
 namespace Infrastructure.BackgroundJobs;
 
-// TODO: Probably we'll have to extract the whole background job service in separate project/solution
 /// <summary>
 /// Background job to process domain (integration?) events
 /// </summary>
@@ -36,7 +35,11 @@ public class ProcessOutboxMessagesJob: IJob
     /// </summary>
     public const int RetryDelayMilliseconds = 50;
 
-    public ProcessOutboxMessagesJob(ApplicationDbContext context, IPublisher publisher, ILogger<ProcessOutboxMessagesJob> logger)
+    public ProcessOutboxMessagesJob(
+        ApplicationDbContext context,
+        IPublisher publisher, 
+        ILogger<ProcessOutboxMessagesJob> logger
+        )
     {
         _context = context;
         _publisher = publisher;
@@ -60,7 +63,7 @@ public class ProcessOutboxMessagesJob: IJob
             // Pretty bad scenario, because we can't even debug to know what happend
             if (domainEvent is null)
             {
-                _logger.LogWarning(
+                _logger.LogError(
                     "Outbox message {@name} with Id: {@id} turned out to contain null event.",
                     message.Name,
                     message.Id
@@ -85,11 +88,29 @@ public class ProcessOutboxMessagesJob: IJob
                 );
 
             // Writing an error if there are some
-            message.Error = result.FinalException?.ToString();
+            if (result.FinalException is not null)
+            {
+                message.Error = result.FinalException.ToString();
+                
+                _logger.LogWarning(
+                    "Outbox message {@name} with Id: {@id} was processed with some error.",
+                    message.Name,
+                    message.Id
+                    );
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Outbox message {@name} with Id: {@id} was processed successfully.",
+                    message.Name,
+                    message.Id
+                );
+            }
             
             message.ProcessedOnUtc = DateTime.UtcNow;
         }
 
+        // TODO: To enforce multi-instance idempotency it is probably better to save changes inside the loop. Or even try smth like Parallel.ForEach (Async?)
         await _context.SaveChangesAsync(context.CancellationToken);
     }
 }
