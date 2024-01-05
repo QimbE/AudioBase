@@ -5,6 +5,11 @@ using Throw;
 
 namespace Domain.MusicReleases;
 
+/// <summary>
+/// Type of release
+/// </summary>
+/// <param name="name"> Name of the type </param>
+/// <param name="value"> Auto enum value </param>
 public class ReleaseType(string name, int value)
     : SmartEnum<ReleaseType>(name, value)
 {

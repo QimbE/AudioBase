@@ -4,6 +4,14 @@ using Throw;
 
 namespace Domain.MusicReleases;
 
+/// <summary>
+/// Release of some type
+/// </summary>
+/// <param name="name"> Release name </param>
+/// <param name="coverLink"> Link to release cover </param>
+/// <param name="authorId"> Id of release`s author </param>
+/// <param name="releaseTypeid"> Id of release`s type </param>
+/// <param name="releaseDate"> Day of release </param>
 public class Release
     : Entity<Release>
 {
