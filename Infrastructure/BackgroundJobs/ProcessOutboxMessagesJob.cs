@@ -4,6 +4,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Retry;
 using Quartz;
 
 namespace Infrastructure.BackgroundJobs;
@@ -22,7 +24,17 @@ public class ProcessOutboxMessagesJob: IJob
     /// <summary>
     /// The maximum amount of events to handle by only one job run
     /// </summary>
-    public const int MaximumMessagesForOneJob = 20;
+    public const int MaxMessagesForOneJob = 20;
+
+    /// <summary>
+    /// The maximum retry count for publish 1 event
+    /// </summary>
+    public const int MaxRetryCount = 3;
+
+    /// <summary>
+    /// Delay step for retries
+    /// </summary>
+    public const int RetryDelayMilliseconds = 50;
 
     public ProcessOutboxMessagesJob(ApplicationDbContext context, IPublisher publisher, ILogger<ProcessOutboxMessagesJob> logger)
     {
@@ -36,7 +48,7 @@ public class ProcessOutboxMessagesJob: IJob
         // Unprocessed messages
         var messages = await _context.OutboxMessages
             .Where(m => m.ProcessedOnUtc == null)
-            .Take(MaximumMessagesForOneJob)
+            .Take(MaxMessagesForOneJob)
             .ToListAsync(context.CancellationToken);
 
         foreach (var message in messages)
@@ -59,7 +71,21 @@ public class ProcessOutboxMessagesJob: IJob
                 continue;
             }
 
-            await _publisher.Publish(domainEvent, context.CancellationToken);
+            // Retry policy configuration
+            AsyncRetryPolicy policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(
+                    MaxRetryCount,
+                    attempt => TimeSpan.FromMilliseconds(RetryDelayMilliseconds * attempt)
+                    );
+
+            // Executing with retry on exceptions
+            PolicyResult result = await policy.ExecuteAndCaptureAsync(
+                () => _publisher.Publish(domainEvent, context.CancellationToken)
+                );
+
+            // Writing an error if there are some
+            message.Error = result.FinalException?.ToString();
             
             message.ProcessedOnUtc = DateTime.UtcNow;
         }
