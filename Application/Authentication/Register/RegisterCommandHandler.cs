@@ -23,7 +23,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
     {
         // if there are the same email
         if (await _context.Users.AnyAsync(
-                u=> string.Equals(u.Email, request.Email, StringComparison.InvariantCultureIgnoreCase),
+                u=> u.Email.ToLower() == request.Email.ToLower(),
                 cancellationToken)
             )
         {

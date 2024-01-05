@@ -24,8 +24,8 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
         var userFromDb = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.RefreshToken)
-            .SingleOrDefaultAsync(u => 
-                string.Equals(u.Email, request.Email, StringComparison.InvariantCultureIgnoreCase),
+            .SingleOrDefaultAsync(
+                u => u.Email.ToLower() == request.Email.ToLower(),
                 cancellationToken
                 );
         
