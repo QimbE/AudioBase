@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Outbox;
+﻿using Throw;
+
+namespace Infrastructure.Outbox;
 
 /// <summary>
 /// A part of implementation of transactional outbox pattern.
@@ -20,7 +22,8 @@ public sealed class OutboxMessage(
 {
     public Guid Id { get; init; } = id;
     
-    public string Name { get; init; } = name;
+    public string Name { get; init; } = name.Throw()
+        .IfNullOrWhiteSpace(x => x);
     
     public string Content { get; init; } = content;
     
