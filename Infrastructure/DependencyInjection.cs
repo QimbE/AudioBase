@@ -1,10 +1,12 @@
 ﻿using Application.DataAccess;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Cache;
 using Infrastructure.Data;
 using Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
 using StackExchange.Redis;
 using Throw;
 
@@ -41,6 +43,26 @@ public static class DependencyInjection
 
         // Cache service
         services.AddScoped<ICacheService, RedisCacheService>();
+        
+        // Quartz
+        services.AddQuartz(configure =>
+        {
+            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+
+            configure
+                .AddJob<ProcessOutboxMessagesJob>(jobKey)
+                .AddTrigger(
+                    trigger => trigger
+                        .ForJob(jobKey)
+                        .WithSimpleSchedule(
+                            schedule => schedule
+                                .WithIntervalInSeconds(10)
+                                .RepeatForever()
+                            )
+                    );
+        });
+
+        services.AddQuartzHostedService();
         
         return services;
     }
