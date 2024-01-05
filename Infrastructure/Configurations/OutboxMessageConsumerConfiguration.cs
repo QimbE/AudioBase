@@ -9,7 +9,5 @@ public class OutboxMessageConsumerConfiguration: IEntityTypeConfiguration<Outbox
     public void Configure(EntityTypeBuilder<OutboxMessageConsumer> builder)
     {
         builder.HasKey(c => new {c.Id, c.ConsumerName});
-
-        builder.Property(c => c.ConsumerName).IsRequired();
     }
 }
