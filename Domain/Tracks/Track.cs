@@ -8,6 +8,10 @@ namespace Domain.Tracks;
 /// </summary>
 /// <param name="Id"> Inherited from base "Entity" class </param>
 /// <param name="_name"> Name of the track </param>
+/// <param name="_audioLink"> Link to the audio file </param>
+/// <param name="_duration"> Duration of a track </param>
+/// <param name="_releaseId"> ID of release, which this track belongs to </param>
+/// <param name="_genreId"> ID of genre, which this track belongs to </param>
 public class Track
     : Entity<Track>
 {
