@@ -9,6 +9,9 @@ using Quartz;
 namespace Infrastructure.BackgroundJobs;
 
 // TODO: Probably we'll have to extract the whole background job service in separate project/solution
+/// <summary>
+/// Background job to process domain (integration?) events
+/// </summary>
 [DisallowConcurrentExecution]
 public class ProcessOutboxMessagesJob: IJob
 {
@@ -16,6 +19,9 @@ public class ProcessOutboxMessagesJob: IJob
     private readonly IPublisher _publisher;
     private readonly ILogger<ProcessOutboxMessagesJob> _logger;
 
+    /// <summary>
+    /// The maximum amount of events to handle by only one job run
+    /// </summary>
     public const int MaximumMessagesForOneJob = 20;
 
     public ProcessOutboxMessagesJob(ApplicationDbContext context, IPublisher publisher, ILogger<ProcessOutboxMessagesJob> logger)

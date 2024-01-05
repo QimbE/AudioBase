@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Infrastructure.Outbox;
 
+/// <summary>
+/// Inserts domain events of related entities to database just before actual savechanges occured;
+/// </summary>
 public sealed class InsertOutboxMessageInterceptor: SaveChangesInterceptor
 {
     private static readonly JsonSerializerSettings SerializerSettings = new()
