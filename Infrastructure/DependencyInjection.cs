@@ -44,7 +44,7 @@ public static class DependencyInjection
         // Cache service
         services.AddScoped<ICacheService, RedisCacheService>();
         
-        // Quartz
+        // Quartz background tasks
         services.AddQuartz(configure =>
         {
             var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
