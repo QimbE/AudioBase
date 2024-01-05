@@ -11,21 +11,21 @@ public class RegisterCommandHandlerTests: AuthTestingBase
     [Theory]
     [InlineData("email@a.ru", "EmAiL@a.rU")]
     [InlineData("BobaN@ab.ru", "boban@ab.ru")]
-    public async Task Register_Should_ReturnException_OnDuplicateEmail(string firstEmail, string secondEmail)
+    public void Register_Should_ReturnException_OnDuplicateEmail(string firstEmail, string secondEmail)
     {
         // Arrange
-        await RecreateDbContextAsync();
+        RecreateDbContext();
 
         
         Context.Users.Add(User.Create("123", firstEmail, "123", 1));
-        await Context.SaveChangesAsync();
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
         
         var request = new RegisterCommand("Boban", secondEmail, "12345678");
 
         var handler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
 
         // Act
-        var result = await handler.Handle(request, default);
+        var result = handler.Handle(request, default).GetAwaiter().GetResult();
         
         // Assert
         result.IsFaulted.Should().BeTrue();
@@ -39,20 +39,20 @@ public class RegisterCommandHandlerTests: AuthTestingBase
     }
     
     [Fact]
-    public async Task Register_Should_ReturnUserResponse_OnValidRequest()
+    public void Register_Should_ReturnUserResponse_OnValidRequest()
     {
         // Arrange
-        await RecreateDbContextAsync();
+        RecreateDbContext();
 
         Context.Users.Add(User.Create("123", "blabla@mail.ru", "123", 1));
-        await Context.SaveChangesAsync();
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
         
         var request = new RegisterCommand("Boban", "bimbimbim@bambam.ru", "12345678");
 
         var handler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
 
         // Act
-        var result = await handler.Handle(request, default);
+        var result = handler.Handle(request, default).GetAwaiter().GetResult();
         
         // Assert
         result.IsSuccess.Should().BeTrue();

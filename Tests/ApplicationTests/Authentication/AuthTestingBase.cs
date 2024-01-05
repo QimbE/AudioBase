@@ -36,11 +36,10 @@ public abstract class AuthTestingBase
         HashProvider = new HashProvider();
     }
 
-    public Task RecreateDbContextAsync()
+    public void RecreateDbContext()
     {
         Context.Database.EnsureDeleted();
         Context.Database.EnsureCreated();
-        return Task.CompletedTask;
     }
     
     ~AuthTestingBase()

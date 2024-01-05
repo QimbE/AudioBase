@@ -11,7 +11,7 @@ public class LoginCommandHandlerTests: AuthTestingBase
     [InlineData("1@1.ru", "Aasdsdsa123123", "1@1.ru", "bim")]
     [InlineData("1@1.ru", "Aasdsdsa123123", "2@1.ru", "bim")]
     [InlineData("1@1.ru", "Aasdsdsa123123", "2@1.ru", "Aasdsdsa123123")]
-    public async Task Login_Should_ReturnException_OnInvalidCredentials(
+    public void Login_Should_ReturnException_OnInvalidCredentials(
         string validEmail,
         string validPassword,
         string actualEmail,
@@ -19,7 +19,7 @@ public class LoginCommandHandlerTests: AuthTestingBase
         )
     {
         // Arrange
-        await RecreateDbContextAsync();
+        RecreateDbContext();
 
         var registerRequest = new RegisterCommand("123", validEmail, validPassword);
         var loginRequest = new LoginCommand(actualEmail, actualPassword);
@@ -27,10 +27,10 @@ public class LoginCommandHandlerTests: AuthTestingBase
         var registerHandler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
         var loginHandler = new LoginCommandHandler(Context, HashProvider, JwtProvider);
 
-        await registerHandler.Handle(registerRequest, default);
+        registerHandler.Handle(registerRequest, default).GetAwaiter().GetResult();
         
         // Act
-        var result = await loginHandler.Handle(loginRequest, default);
+        var result = loginHandler.Handle(loginRequest, default).GetAwaiter().GetResult();
         
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -44,10 +44,10 @@ public class LoginCommandHandlerTests: AuthTestingBase
     }
     
     [Fact]
-    public async Task Login_Should_ReturnUserResponse_OnValidCredentials()
+    public void Login_Should_ReturnUserResponse_OnValidCredentials()
     {
         // Arrange
-        await RecreateDbContextAsync();
+        RecreateDbContext();
 
         var email = "1@1.ru";
         var password = "bimbimbim123";
@@ -58,10 +58,10 @@ public class LoginCommandHandlerTests: AuthTestingBase
         var registerHandler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
         var loginHandler = new LoginCommandHandler(Context, HashProvider, JwtProvider);
 
-        await registerHandler.Handle(registerRequest, default);
+        registerHandler.Handle(registerRequest, default).GetAwaiter().GetResult();
         
         // Act
-        var result = await loginHandler.Handle(loginRequest, default);
+        var result = loginHandler.Handle(loginRequest, default).GetAwaiter().GetResult();
         
         // Assert
         result.IsSuccess.Should().BeTrue();

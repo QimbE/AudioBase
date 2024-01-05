@@ -23,10 +23,10 @@ public class RefreshCommandHandlerTests: AuthTestingBase
     
     [Theory]
     [MemberData(nameof(InvalidUsersAndTokens))]
-    public async Task Refresh_ShouldReturnException_OnInvalidToken(User user, RefreshToken token)
+    public void Refresh_ShouldReturnException_OnInvalidToken(User user, RefreshToken token)
     {
         // Arrange
-        await RecreateDbContextAsync();
+        RecreateDbContext();
         Context.Users.Add(user);
         
         if (token.Id == user.Id)
@@ -34,14 +34,14 @@ public class RefreshCommandHandlerTests: AuthTestingBase
             Context.RefreshTokens.Add(token);
         }
 
-        await Context.SaveChangesAsync();
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
 
         var handler = new RefreshCommandHandler(Context, JwtProvider);
 
         var request = new RefreshCommand(token.Value);
         
         // Act
-        var res = await handler.Handle(request, default);
+        var res = handler.Handle(request, default).GetAwaiter().GetResult();
         
         // Assert
         res.IsFaulted.Should().BeTrue();
@@ -55,10 +55,10 @@ public class RefreshCommandHandlerTests: AuthTestingBase
     }
     
     [Fact]
-    public async Task Refresh_ShouldReturnTokenResponse_OnValidToken()
+    public void Refresh_ShouldReturnTokenResponse_OnValidToken()
     {
         // Arrange
-        await RecreateDbContextAsync();
+        RecreateDbContext();
         
         var user = User.Create("123", "test", "123123", 1);
 
@@ -67,14 +67,14 @@ public class RefreshCommandHandlerTests: AuthTestingBase
         Context.Users.Add(user);
         Context.RefreshTokens.Add(token);
         
-        await Context.SaveChangesAsync();
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
 
         var handler = new RefreshCommandHandler(Context, JwtProvider);
 
         var request = new RefreshCommand(token.Value);
         
         // Act
-        var res = await handler.Handle(request, default);
+        var res = handler.Handle(request, default).GetAwaiter().GetResult();
         
         // Assert
         res.IsSuccess.Should().BeTrue();
