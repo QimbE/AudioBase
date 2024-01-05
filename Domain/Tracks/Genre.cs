@@ -1,7 +1,7 @@
 using Domain.Abstractions;
 using Throw;
 
-namespace Domain.Catalog;
+namespace Domain.Tracks;
 
 /// <summary>
 /// Genre of a track
