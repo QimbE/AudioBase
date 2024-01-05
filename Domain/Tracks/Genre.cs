@@ -7,7 +7,7 @@ namespace Domain.Tracks;
 /// Genre of a track
 /// </summary>
 /// <param name="Id"> Inherited from base "Entity" class </param>
-/// <param name="_name"> Name of the genre </param>
+/// <param name="name"> Name of the genre </param>
 public class Genre
     : Entity<Genre>
 {
