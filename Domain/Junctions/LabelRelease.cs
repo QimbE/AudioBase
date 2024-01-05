@@ -8,8 +8,8 @@ namespace Domain.Junctions;
 /// </summary>
 /// <param name="labelId"> Id of a label </param>
 /// <param name="releaseId"> Id of a release under that label</param>
-public class LabelReleases
-    : Entity<LabelReleases>
+public class LabelRelease
+    : Entity<LabelRelease>
 {
     private Guid _labelId;
 
@@ -31,19 +31,19 @@ public class LabelReleases
                 .IfNull(ri => ri);
     }
     
-    protected LabelReleases()
+    protected LabelRelease()
     {
         
     }
 
-    protected LabelReleases(Guid labelId, Guid releaseId)
+    protected LabelRelease(Guid labelId, Guid releaseId)
         : base(Guid.NewGuid())
     {
         LabelId = labelId;
         ReleaseId = releaseId;
     }
 
-    public static LabelReleases Create(Guid labelId, Guid releaseId)
+    public static LabelRelease Create(Guid labelId, Guid releaseId)
     {
         return new(labelId, releaseId);
     }
