@@ -8,6 +8,12 @@ namespace ApplicationTests.Authentication;
 
 public class RegisterCommandHandlerTests: AuthTestingBase
 {
+    public RegisterCommandHandlerTests()
+        : base(typeof(RegisterCommandHandlerTests))
+    {
+        
+    }
+    
     [Theory]
     [InlineData("email@a.ru", "EmAiL@a.rU")]
     [InlineData("BobaN@ab.ru", "boban@ab.ru")]

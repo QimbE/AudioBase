@@ -1,6 +1,7 @@
 ﻿using Application.Authentication;
 using Infrastructure.Authentication;
 using Infrastructure.Data;
+using Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
@@ -13,11 +14,14 @@ public abstract class AuthTestingBase
     protected readonly IJwtProvider JwtProvider;
     protected readonly IHashProvider HashProvider;
     
-    public AuthTestingBase()
+    protected static InsertOutboxMessageInterceptor Interceptor = new();
+    
+    public AuthTestingBase(Type toTakeName)
     {
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         builder
-            .UseInMemoryDatabase("Test");
+            .AddInterceptors(Interceptor)
+            .UseInMemoryDatabase(toTakeName.Name);
 
         Context = new TestDbContext(builder.Options);
         
