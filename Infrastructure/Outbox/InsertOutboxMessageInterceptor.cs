@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Infrastructure.Outbox;
 
+/// <summary>
+/// Inserts domain events of related entities to database just before actual savechanges occured;
+/// </summary>
 public sealed class InsertOutboxMessageInterceptor: SaveChangesInterceptor
 {
     private static readonly JsonSerializerSettings SerializerSettings = new()
@@ -36,16 +39,16 @@ public sealed class InsertOutboxMessageInterceptor: SaveChangesInterceptor
         var outboxMessages = context.ChangeTracker
             .Entries<Entity>()
             .Select(entry => entry.Entity)
-            .SelectMany<Entity, INotification>(entity =>
+            .SelectMany<Entity, DomainEvent>(entity =>
             {
-                List<INotification> domainEvents = [..entity.DomainEvents];
+                List<DomainEvent> domainEvents = [..entity.DomainEvents];
                 
                 entity.ClearEventList();
                 
                 return domainEvents;
             })
             .Select(domainEvent => new OutboxMessage(
-                Guid.NewGuid(),
+                domainEvent.Id,
                 domainEvent.GetType().Name,
                 JsonConvert.SerializeObject(domainEvent, SerializerSettings),
                 utcNow)

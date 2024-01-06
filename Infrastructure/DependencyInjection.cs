@@ -1,10 +1,14 @@
 ﻿using Application.DataAccess;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Cache;
 using Infrastructure.Data;
+using Infrastructure.Idempotence;
 using Infrastructure.Outbox;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
 using StackExchange.Redis;
 using Throw;
 
@@ -14,6 +18,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // Db context configuration
         services.AddDbContext<ApplicationDbContext>((provider, options) =>
             options
                 .AddInterceptors(provider.GetRequiredService<InsertOutboxMessageInterceptor>())
@@ -41,6 +46,34 @@ public static class DependencyInjection
 
         // Cache service
         services.AddScoped<ICacheService, RedisCacheService>();
+        
+        // Quartz background tasks
+        services.AddQuartz(configure =>
+        {
+            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+
+            configure
+                .AddJob<ProcessOutboxMessagesJob>(jobKey)
+                .AddTrigger(
+                    trigger => trigger
+                        .ForJob(jobKey)
+                        .WithSimpleSchedule(
+                            schedule => schedule
+                                .WithIntervalInSeconds(10)
+                                .RepeatForever()
+                            )
+                    );
+        });
+
+        services.AddQuartzHostedService();
+
+        // Decorating all notification handlers to be idempotent
+        // TODO: This probably does not work, because i've highly likely missdesigned DomainEvent :D (See next lines to know how to fix)
+        // Extract IDomainEvent interface implementing INotification, also do this with INotificationHandler
+        // Replace all DomainEvent references in infrastructure layer with interface (don't forget actual handlers)
+        // ...
+        // Profit!
+        services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
         
         return services;
     }
