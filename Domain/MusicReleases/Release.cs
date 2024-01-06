@@ -15,6 +15,8 @@ namespace Domain.MusicReleases;
 public class Release
     : Entity<Release>
 {
+    public ReleaseType ReleaseType { get; protected set; }
+    
     private string _name;
 
     public string Name
