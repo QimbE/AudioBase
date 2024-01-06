@@ -30,6 +30,11 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
     /// </summary>
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
     
+    /// <summary>
+    /// List of attempts to process outbox messages.
+    /// </summary>
+    public DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; set; }
+    
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         :base(options)
     {
