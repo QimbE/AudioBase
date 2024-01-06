@@ -6,6 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Authentication.Login;
 
+/// <summary>
+/// Logs user in.
+/// </summary>
+/// <example>
+/// Base use cases:
+/// When user wants to have an access with new device/browser.
+/// When refresh token has expired and user have to login again.
+/// </example>
 public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserResponse>>
 {
     private readonly IApplicationDbContext _context;

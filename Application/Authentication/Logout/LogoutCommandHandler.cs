@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Authentication.Logout;
 
+/// <summary>
+/// Makes given refresh token expired
+/// </summary>
 public class LogoutCommandHandler: IRequestHandler<LogoutCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _context;

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Authentication.Refresh;
 
+/// <summary>
+/// Provides new access token if refresh token is still valid
+/// </summary>
 public class RefreshCommandHandler: IRequestHandler<RefreshCommand, Result<TokenResponse>>
 {
     private readonly IApplicationDbContext _context;

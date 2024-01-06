@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Authentication.Register;
 
+/// <summary>
+/// Registres new DEFAULT User (Not an admin or smth)
+/// </summary>
 public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<UserResponse>>
 {
     private readonly IApplicationDbContext _context;

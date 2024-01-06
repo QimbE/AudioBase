@@ -74,6 +74,7 @@ public class User
 
     public static User Create(string name, string email, string password, int roleId)
     {
+        // TODO: Add event raising
         return new(name, email, password, roleId);
     }
 
