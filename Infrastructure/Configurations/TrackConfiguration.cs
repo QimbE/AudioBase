@@ -1,3 +1,4 @@
+using Domain.MusicReleases;
 using Domain.Tracks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,7 +23,12 @@ public class TrackConfiguration: IEntityTypeConfiguration<Track>
 
         builder.HasOne<Genre>()
             .WithMany()
-            .HasForeignKey(o => o.GenreId)
+            .HasForeignKey(t => t.GenreId)
+            .IsRequired();
+        
+        builder.HasOne<Release>()
+            .WithMany()
+            .HasForeignKey(t => t.ReleaseId)
             .IsRequired();
     }
 }

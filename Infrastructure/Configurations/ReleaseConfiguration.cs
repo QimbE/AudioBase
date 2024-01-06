@@ -1,3 +1,4 @@
+using Domain.Artists;
 using Domain.MusicReleases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,5 +20,15 @@ public class ReleaseConfiguration : IEntityTypeConfiguration<Release>
         builder.Property(r => r.ReleaseTypeId);
         
         builder.Property(r => r.ReleaseDate);
+        
+        builder.HasOne<Artist>()
+            .WithMany()
+            .HasForeignKey(r => r.AuthorId)
+            .IsRequired();
+        
+        builder.HasOne<ReleaseType>()
+            .WithMany()
+            .HasForeignKey(r => r.ReleaseTypeId)
+            .IsRequired();
     }
 }
