@@ -178,7 +178,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("OutboxMessages", (string)null);
                 });
 
-
             modelBuilder.Entity("Infrastructure.Outbox.OutboxMessageConsumer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -190,6 +189,15 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id", "ConsumerName");
 
                     b.ToTable("OutboxMessageConsumers");
+                });
+
+            modelBuilder.Entity("Domain.Tracks.Track", b =>
+                {
+                    b.HasOne("Domain.Tracks.Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Users.RefreshToken", b =>
