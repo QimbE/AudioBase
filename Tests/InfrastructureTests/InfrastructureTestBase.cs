@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using System.Security.Cryptography;
+using Infrastructure.Data;
 using Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,12 +11,12 @@ public abstract class InfrastructureTestBase
 
     protected  readonly TestDbContext Context;
     
-    public InfrastructureTestBase()
+    public InfrastructureTestBase(Type toTakeName)
     {
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         builder
             .AddInterceptors(Interceptor)
-            .UseInMemoryDatabase("Test");
+            .UseInMemoryDatabase(toTakeName.Name);
         
         Context = new TestDbContext(builder.Options);
     }

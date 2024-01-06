@@ -51,6 +51,12 @@ public class EntityStub : Entity<EntityStub>
 
 public class InsertOutboxMessageInterceptorTests: InfrastructureTestBase
 {
+    public InsertOutboxMessageInterceptorTests():
+        base(typeof(InfrastructureTestBase))
+    {
+        
+    }
+    
     public static IEnumerable<object[]> Stubs => [
         [EntityStub.Create("test1")],
         [EntityStub.Create("test2", false)],

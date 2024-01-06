@@ -19,6 +19,11 @@ public class ProcessOutboxMessagesJob: IJob
     private readonly ApplicationDbContext _context;
     private readonly IPublisher _publisher;
     private readonly ILogger<ProcessOutboxMessagesJob> _logger;
+    
+    private static readonly JsonSerializerSettings SerializerSettings = new()
+    {
+        TypeNameHandling = TypeNameHandling.All
+    };
 
     /// <summary>
     /// The maximum amount of events to handle by only one job run
@@ -58,7 +63,7 @@ public class ProcessOutboxMessagesJob: IJob
         {
             // Something tells me that it is actually Integration, not Domain event (but who cares?)
             var domainEvent = JsonConvert
-                .DeserializeObject<DomainEvent>(message.Content);
+                .DeserializeObject<DomainEvent>(message.Content, SerializerSettings);
 
             // Pretty bad scenario, because we can't even debug to know what happend
             if (domainEvent is null)

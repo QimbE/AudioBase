@@ -7,6 +7,12 @@ namespace InfrastructureTests;
 
 public class IdempotentDomainEventHandlerTests: InfrastructureTestBase
 {
+    public IdempotentDomainEventHandlerTests()
+        : base(typeof(IdempotentDomainEventHandlerTests))
+    {
+        
+    }
+    
     [Fact]
     public void IdempotentHandler_ShouldNot_ExecuteActualHandler_OnRepeatedCall()
     {
