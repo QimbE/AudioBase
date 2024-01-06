@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Security.Authentication;
 using Domain.Users.Exceptions;
+using FluentValidation;
 using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
 
@@ -64,6 +65,7 @@ public static class ResultMapper
             InvalidRefreshTokenException e => (StatusCodes.Status400BadRequest, e.Message, null),
             InvalidCredentialException e => (StatusCodes.Status400BadRequest, e.Message, null),
             DuplicateNameException e => (StatusCodes.Status409Conflict, e.Message, null),
+            ValidationException e => e.ToValidationResponse(),
             _ => (StatusCodes.Status500InternalServerError, "An unmapable error occured.",
                 new Dictionary<string, object?>())
         };
@@ -73,5 +75,15 @@ public static class ResultMapper
                 title: message,
                 extensions: additionalInfo
                 );
+    }
+
+    private static (int statusCode, string message, IDictionary<string, object?>? additionalInfo) ToValidationResponse(this ValidationException error)
+    {
+        var info = new Dictionary<string, object?>
+        {
+            {"Validation Errors", error.Errors}
+        };
+
+        return (StatusCodes.Status400BadRequest, error.Message, info);
     }
 }
