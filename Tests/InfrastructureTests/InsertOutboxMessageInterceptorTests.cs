@@ -1,24 +1,7 @@
 ﻿using Domain.Abstractions;
 using FluentAssertions;
-using Infrastructure.Data;
-using Infrastructure.Outbox;
-using Microsoft.EntityFrameworkCore;
 
 namespace InfrastructureTests;
-
-/// <summary>
-/// Context for tests
-/// </summary>
-public class TestDbContext : ApplicationDbContext
-{
-    public DbSet<EntityStub> Stubs { get; set; }
-    
-    public TestDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-        
-    }
-}
 
 /// <summary>
 /// Stub event for tests
@@ -66,22 +49,8 @@ public class EntityStub : Entity<EntityStub>
     }
 }
 
-public class InsertOutboxMessageInterceptorTests
+public class InsertOutboxMessageInterceptorTests: InfrastructureTestBase
 {
-    private static InsertOutboxMessageInterceptor _interceptor = new();
-
-    private readonly TestDbContext _context;
-    
-    public InsertOutboxMessageInterceptorTests()
-    {
-        var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        builder
-            .AddInterceptors(_interceptor)
-            .UseInMemoryDatabase("Test");
-        
-        _context = new TestDbContext(builder.Options);
-    }
-
     public static IEnumerable<object[]> Stubs => [
         [EntityStub.Create("test1")],
         [EntityStub.Create("test2", false)],
@@ -93,15 +62,14 @@ public class InsertOutboxMessageInterceptorTests
     public void SaveChangesAsync_Should_AddOutboxMessagesToDb(EntityStub stub)
     {
         // Arrange
-        _context.Database.EnsureDeleted();
-        _context.Database.EnsureCreated();
+        RecreateDatabase();
         var eventCount = stub.DomainEvents.Count;
         
         // Act
-        _context.Stubs.Add(stub);
-        _context.SaveChangesAsync().GetAwaiter().GetResult();
-        var stubs = _context.Stubs.AsEnumerable();
-        var outboxMessages = _context.OutboxMessages.AsEnumerable();
+        Context.Stubs.Add(stub);
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
+        var stubs = Context.Stubs.AsEnumerable();
+        var outboxMessages = Context.OutboxMessages.AsEnumerable();
         
         // Assert
         outboxMessages.Count().Should().Be(eventCount);
@@ -110,6 +78,6 @@ public class InsertOutboxMessageInterceptorTests
 
     ~InsertOutboxMessageInterceptorTests()
     {
-        _context.Dispose();
+        Context.Dispose();
     }
 }
