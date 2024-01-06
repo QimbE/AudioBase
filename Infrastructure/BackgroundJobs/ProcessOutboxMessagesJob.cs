@@ -110,7 +110,7 @@ public class ProcessOutboxMessagesJob: IJob
             message.ProcessedOnUtc = DateTime.UtcNow;
         }
 
-        // TODO: To enforce multi-instance idempotency it is probably better to save changes inside the loop. Or even try smth like Parallel.ForEach (Async?)
+        // TODO: To enforce multi-instance idempotency it is probably better to save changes inside the loop and try to add pessimistic/optimistic transactions.
         await _context.SaveChangesAsync(context.CancellationToken);
     }
 }
