@@ -49,7 +49,7 @@ public static class ResultMapper
             return Results.Ok(new BaseResponse());
         }
 
-        return Results.Ok(new ResponseWithData(success));
+        return Results.Ok(new ResponseWithData<T>(success));
     }
     
     /// <summary>

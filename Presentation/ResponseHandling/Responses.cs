@@ -16,11 +16,11 @@ public class BaseResponse
 /// <summary>
 /// Response with any data
 /// </summary>
-public class ResponseWithData : BaseResponse
+public class ResponseWithData<T> : BaseResponse
 {
-    public object Data { get; protected set; }
+    public T Data { get; protected set; }
 
-    public ResponseWithData(object data)
+    public ResponseWithData(T data)
         : base()
     {
         Data = data;
