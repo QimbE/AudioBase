@@ -5,7 +5,7 @@ using FluentValidation;
 using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
 
-namespace Presentation;
+namespace Presentation.ResponseHandling;
 
 /// <summary>
 /// Maps Result to valid API response
