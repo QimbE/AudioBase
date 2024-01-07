@@ -29,7 +29,7 @@ public class Program
             {
                 In = ParameterLocation.Header,
                 Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
+                Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT"
             });
@@ -68,17 +68,19 @@ public class Program
                     app.Configuration.GetValue<string[]>("Cors:AllowedHosts")!
                     )
             );
+            // TODO: Add request rate limiter
         }
 
         app.UseHttpsRedirection();
+        
+        app.UseSerilogRequestLogging();
         
         app.UseAuthentication();
         
         app.UseAuthorization();
 
-        app.UseSerilogRequestLogging();
-
-        //TODO: app.MapCarter();
+        app.MapCarter();
+        
         app.MapGraphQL();
         
         app.Run();
