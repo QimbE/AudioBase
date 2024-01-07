@@ -11,6 +11,7 @@ using Throw;
 
 namespace Presentation.ResponseHandling;
 
+// TODO: Split this into classes
 /// <summary>
 /// Maps Result to valid API response
 /// </summary>
@@ -24,7 +25,6 @@ public static class ResultMapper
     /// <typeparam name="T">Some response type</typeparam>
     /// <returns>Related result</returns>
     public static Task<IResult> MapToResponse<T>(this Result<T> resultToMap, CancellationToken cancellationToken = default)
-        where T : class
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -48,7 +48,6 @@ public static class ResultMapper
     /// <typeparam name="T">Some response type</typeparam>
     /// <returns>Related result</returns>
     public static Task<IResult> MapToResponse<T>(this Result<T> resultToMap, HttpContext context, CancellationToken cancellationToken = default)
-        where T : class
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -71,7 +70,6 @@ public static class ResultMapper
     /// <typeparam name="T">Some response type</typeparam>
     /// <returns>Related result</returns>
     public static IResult MapToResponse<T>(this T success, HttpContext? context = null)
-        where T: class
     {
         return success switch
         {
