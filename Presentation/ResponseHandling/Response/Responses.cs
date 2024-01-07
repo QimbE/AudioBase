@@ -1,4 +1,4 @@
-﻿namespace Presentation.ResponseHandling;
+﻿namespace Presentation.ResponseHandling.Response;
 
 /// <summary>
 /// Base success response (No data attached)

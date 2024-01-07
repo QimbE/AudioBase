@@ -1,9 +1,13 @@
 ﻿using System.Data;
 using System.Security.Authentication;
+using Application.Authentication.Register;
 using Domain.Users.Exceptions;
 using FluentValidation;
 using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
+using Presentation.Endpoints;
+using Presentation.ResponseHandling.Response;
+using Throw;
 
 namespace Presentation.ResponseHandling;
 
@@ -34,22 +38,47 @@ public static class ResultMapper
                 )
             );
     }
-    
+
+    /// <summary>
+    /// Maps Result to valid API response
+    /// </summary>
+    /// <param name="resultToMap">Some handler result</param>
+    /// <param name="context">Http context</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <typeparam name="T">Some response type</typeparam>
+    /// <returns>Related result</returns>
+    public static Task<IResult> MapToResponse<T>(this Result<T> resultToMap, HttpContext context, CancellationToken cancellationToken = default)
+        where T : class
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<IResult>(cancellationToken);
+        }
+        
+        return Task.FromResult(
+            resultToMap.Match(
+                success => success.MapToResponse(context),
+                failure => failure.MapToResponse()
+            )
+        );
+    }
+
     /// <summary>
     /// Maps any succeed result to default response.
     /// </summary>
     /// <param name="success">Some response</param>
+    /// <param name="context">Http context for cookies managing or smth</param>
     /// <typeparam name="T">Some response type</typeparam>
     /// <returns>Related result</returns>
-    public static IResult MapToResponse<T>(this T success)
+    public static IResult MapToResponse<T>(this T success, HttpContext? context = null)
         where T: class
     {
-        if (success is bool)
+        return success switch
         {
-            return Results.Ok(new BaseResponse());
-        }
-
-        return Results.Ok(new ResponseWithData<T>(success));
+            UserResponse s => s.MapUserResponse(context),
+            bool s => Results.Ok(new BaseResponse()),
+            _ => Results.Ok(new ResponseWithData<T>(success))
+        };
     }
     
     /// <summary>
@@ -85,5 +114,23 @@ public static class ResultMapper
         };
 
         return (StatusCodes.Status400BadRequest, error.Message, info);
+    }
+
+    private static IResult MapUserResponse(this UserResponse success, HttpContext? context)
+    {
+        context.ThrowIfNull(new ExceptionCustomizations("Use MapToResponse with HttpContext"));
+        
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true
+            // probably set an expiration
+        };
+                        
+        context.Response.Cookies
+            .Append(Authentication.RefreshTokenCookieName, success.RefreshToken, cookieOptions);
+
+        return Results.Ok(
+            new ResponseWithData<UserResponseDto>(new(success))
+            );
     }
 }
