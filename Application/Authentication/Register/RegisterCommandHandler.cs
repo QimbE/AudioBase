@@ -24,7 +24,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
     
     public async Task<Result<UserResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        // if there are the same email
+        // if there is the same email
         if (await _context.Users.AnyAsync(
                 u=> u.Email.ToLower() == request.Email.ToLower(),
                 cancellationToken)
