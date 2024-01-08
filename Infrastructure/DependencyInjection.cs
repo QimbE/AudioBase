@@ -58,7 +58,7 @@ public static class DependencyInjection
         {
             var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
 
-            // Quartz devs missdesigned or misscoded the scheduler lifetime so we need different schedulers for multipule app instances
+            // Quartz devs misdesigned or miscoded the scheduler lifetime so we need different schedulers for multiple app instances
             configure.SchedulerName = Guid.NewGuid().ToString();
             
             configure
