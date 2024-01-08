@@ -1,4 +1,6 @@
-﻿namespace Presentation.ResponseHandling.Response;
+﻿using System.Text.Json.Serialization;
+
+namespace Presentation.ResponseHandling.Response;
 
 /// <summary>
 /// Base success response (No data attached)
@@ -20,6 +22,7 @@ public class ResponseWithData<T> : BaseResponse
 {
     public T Data { get; protected set; }
 
+    [JsonConstructor]
     public ResponseWithData(T data)
         : base()
     {
