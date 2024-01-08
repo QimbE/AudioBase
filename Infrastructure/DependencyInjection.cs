@@ -1,4 +1,6 @@
-﻿using Application.DataAccess;
+using Application.Authentication;
+using Infrastructure.Authentication;
+using Application.DataAccess;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Cache;
 using Infrastructure.Data;
@@ -46,12 +48,19 @@ public static class DependencyInjection
 
         // Cache service
         services.AddScoped<ICacheService, RedisCacheService>();
+
+        services.AddScoped<IHashProvider, HashProvider>();
+
+        services.AddScoped<IJwtProvider, JwtProvider>();
         
         // Quartz background tasks
         services.AddQuartz(configure =>
         {
             var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
 
+            // Quartz devs misdesigned or miscoded the scheduler lifetime so we need different schedulers for multiple app instances
+            configure.SchedulerName = Guid.NewGuid().ToString();
+            
             configure
                 .AddJob<ProcessOutboxMessagesJob>(jobKey)
                 .AddTrigger(

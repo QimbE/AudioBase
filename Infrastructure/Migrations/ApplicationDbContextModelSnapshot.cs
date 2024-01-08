@@ -65,6 +65,16 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+                            Value = 3,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Value = 2,
+                            Name = "CatalogAdmin"
+                        },
+                        new
+                        {
                             Value = 1,
                             Name = "DefaultUser"
                         });

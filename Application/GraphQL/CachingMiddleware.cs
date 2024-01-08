@@ -5,6 +5,8 @@ using Throw;
 
 namespace Application.GraphQL;
 
+
+// TODO: Should be deleted and replaced with persisted queries due to security reasons
 public class CachingMiddleware
 {
     private readonly RequestDelegate _next;

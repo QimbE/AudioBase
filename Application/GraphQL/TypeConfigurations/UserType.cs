@@ -9,7 +9,7 @@ public class UserType: ObjectType<User>
     {
         base.Configure(descriptor);
 
-        // TODO: descriptor.Authorize(Admin);
+        descriptor.Authorize(Role.Admin.Name);
 
         descriptor.Ignore(u => u.Password);
 

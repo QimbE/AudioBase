@@ -69,6 +69,11 @@ public class RefreshToken
         ExpirationDate = DateTime.UtcNow.AddDays(LifeTime);
     }
 
+    public void MakeExpire()
+    {
+        ExpirationDate = DateTime.UtcNow;
+    }
+
     public override string ToString()
     {
         return base.ToString() + $" Value: {this.Value}";
