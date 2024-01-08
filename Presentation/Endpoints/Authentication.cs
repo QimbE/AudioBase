@@ -99,6 +99,7 @@ public class Authentication: ICarterModule
             .AllowAnonymous()
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
             .WithSummary("Makes refresh token expired");
     }
 }
