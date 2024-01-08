@@ -60,7 +60,7 @@ public class Authentication: ICarterModule
             })
             .AllowAnonymous()
             .Produces<Ok<ResponseWithData<TokenResponse>>>()
-            .Produces<BadRequest>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
             .WithSummary("Refreshes access token");
 
