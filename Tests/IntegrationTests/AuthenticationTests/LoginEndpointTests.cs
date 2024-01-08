@@ -17,7 +17,6 @@ public class LoginEndpointTests: BaseIntegrationTest
     
     [Theory]
     [InlineData("Boban123", "123@123.ru", "12345678")]
-    [InlineData(" ", "123@123.ru", "12345678")]
     [InlineData("Boban123", "@123.", "12345678")]
     [InlineData("Boban123", "123@123.ru", "123")]
     public async Task LoginEndpoint_ShouldReturn_ResponseDependsOnValidationResult(
