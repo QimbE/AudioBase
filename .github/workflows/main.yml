@@ -33,5 +33,5 @@ jobs:
         env:
           JwtSettings__Issuer: ${{secrets.JWTSETTINGS__ISSUER}}
           JwtSettings__Audience: ${{secrets.JWTSETTINGS__AUDIENCE}}
-          JwtSettings__Key: ${secrets.JWTSETTINGS__KEY}
-          JwtSettings__ExpiryTime: ${secrets.JWTSETTINGS__EXPIRYTIME}
+          JwtSettings__Key: ${{secrets.JWTSETTINGS__KEY}}
+          JwtSettings__ExpiryTime: ${{secrets.JWTSETTINGS__EXPIRYTIME}}
