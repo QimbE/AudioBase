@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,9 +40,7 @@ public class JwtProvider: IJwtProvider
             claims,
             null,
             DateTime.UtcNow.Add(
-                TimeSpan.Parse(
-                    settings["ExpiryTime"]!
-                )
+                TimeSpan.ParseExact(settings["ExpiryTime"]!, "hh\\:mm\\:ss", CultureInfo.InvariantCulture)
             ),
             signingCredentials
         );
