@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Application.Authentication;
 using Application.Authentication.Register;
 
 namespace Presentation.ResponseHandling.Response;

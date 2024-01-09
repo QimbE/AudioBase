@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Security.Authentication;
+using Application.Authentication;
 using Application.Authentication.Register;
 using Domain.Users.Exceptions;
 using FluentValidation;

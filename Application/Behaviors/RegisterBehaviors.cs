@@ -1,4 +1,5 @@
-﻿using Application.Authentication.Login;
+﻿using Application.Authentication;
+using Application.Authentication.Login;
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
@@ -28,7 +29,7 @@ internal static class RegisterBehaviors
     {
         // add validation pipeline here here
         return config
-            .AddValidationBehavior<RegisterCommand, UserResponse>()
+            .AddValidationBehavior<RegisterCommand, bool>()
             .AddValidationBehavior<LoginCommand, UserResponse>()
             .AddValidationBehavior<RefreshCommand, TokenResponse>()
             .AddValidationBehavior<LogoutCommand, bool>();
