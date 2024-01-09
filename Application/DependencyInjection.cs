@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 namespace Application;
 
@@ -30,7 +31,11 @@ public static class DependencyInjection
         // GraphQL configuration
         services.AddGraphQLServer()
             .ConfigureHotChocolateTypes()
-            .UseDefaultPipeline();
+            .UseAutomaticPersistedQueryPipeline()
+            .AddRedisQueryStorage(
+                s => s.GetRequiredService<IConnectionMultiplexer>().GetDatabase(),
+                TimeSpan.FromMinutes(2)
+                );
         
         // Authentication
         var secretKey = Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!);
