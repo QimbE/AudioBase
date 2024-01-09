@@ -30,7 +30,7 @@ public static class DependencyInjection
         // GraphQL configuration
         services.AddGraphQLServer()
             .ConfigureHotChocolateTypes()
-            .ConfigurePipeline();
+            .UseDefaultPipeline();
         
         // Authentication
         var secretKey = Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!);
