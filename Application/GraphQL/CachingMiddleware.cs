@@ -6,7 +6,7 @@ using Throw;
 namespace Application.GraphQL;
 
 
-// TODO: Should be deleted and replaced with persisted queries due to security reasons
+[Obsolete("Obsolete due to unexpected caching behavior. There is a chance to fix it if we somehow manage to deal with hotchocolate pipeline", true)]
 public class CachingMiddleware
 {
     private readonly RequestDelegate _next;
