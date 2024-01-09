@@ -8,6 +8,7 @@ using NSubstitute.ReturnsExtensions;
 
 namespace ApplicationTests;
 
+[Obsolete]
 public class CachingMiddlewareTests
 {
     [Fact]
