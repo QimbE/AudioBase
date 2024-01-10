@@ -1,6 +1,7 @@
 ﻿using System.Security.Authentication;
 using Application.Authentication.Register;
 using Application.DataAccess;
+using Domain.Users.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +43,12 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
             ! await _hashProvider.VerifyPassword(request.Password, userFromDb.Password))
         {
             return new(new InvalidCredentialException("Invalid credentials"));
+        }
+        
+        // if the user is not verified
+        if (userFromDb.IsVerified)
+        {
+            return new(new UnverifiedEmailException());
         }
         
         userFromDb.RefreshToken.Update(_jwtProvider.GenerateRefreshToken());

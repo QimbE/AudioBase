@@ -94,6 +94,7 @@ public static class ResultMapper
             InvalidCredentialException e => (StatusCodes.Status400BadRequest, e.Message, null),
             DuplicateNameException e => (StatusCodes.Status409Conflict, e.Message, null),
             ValidationException e => e.ToValidationResponse(),
+            UnverifiedEmailException e => (StatusCodes.Status400BadRequest, e.Message, null),
             _ => (StatusCodes.Status500InternalServerError, "An unmapable error occured.",
                 new Dictionary<string, object?>())
         };
