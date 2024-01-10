@@ -102,4 +102,25 @@ public class LoginEndpointTests: BaseIntegrationTest
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+    
+    [Fact]
+    public async Task LoginEndpoint_ShouldReturn_BadRequestOnUnverifiedEmail()
+    {
+        // Arrange
+        var email = "hehehehuh123@mail.ru";
+        var password = "bimbimbim123";
+        
+        var httpClient = Factory.CreateClient();
+
+        var loginRequest = new LoginCommand(email, password);
+
+        var registerRequest = new RegisterCommand("SomeName123123", email, password);
+        
+        // Act
+        await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
