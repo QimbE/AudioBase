@@ -37,6 +37,14 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<boo
         var user = User.Create(request.Name, request.Email, hash, Role.DefaultUser);
 
         _context.Users.Add(user);
+        
+        // refreshToken
+        var refreshToken = RefreshToken.Create("", user.Id);
+        
+        // Security reasons
+        refreshToken.MakeExpire();
+
+        _context.RefreshTokens.Add(refreshToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 
