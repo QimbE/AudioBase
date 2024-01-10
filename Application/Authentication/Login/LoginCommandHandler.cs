@@ -46,7 +46,7 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
         }
         
         // if the user is not verified
-        if (userFromDb.IsVerified)
+        if (!userFromDb.IsVerified)
         {
             return new(new UnverifiedEmailException());
         }

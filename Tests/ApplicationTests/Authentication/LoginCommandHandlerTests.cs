@@ -67,6 +67,12 @@ public class LoginCommandHandlerTests: AuthTestingBase
 
         registerHandler.Handle(registerRequest, default).GetAwaiter().GetResult();
         
+        var user = Context.Users.FirstOrDefault(u => u.Email == registerRequest.Email);
+            
+        user!.VerifyEmail();
+
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
+        
         // Act
         var result = loginHandler.Handle(loginRequest, default).GetAwaiter().GetResult();
         

@@ -3,6 +3,9 @@ using System.Net.Http.Json;
 using Application.Authentication.Login;
 using Application.Authentication.Register;
 using FluentAssertions;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Presentation.ResponseHandling.Response;
 
 namespace IntegrationTests.AuthenticationTests;
@@ -36,6 +39,20 @@ public class LoginEndpointTests: BaseIntegrationTest
         
         // Act
         await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        
+        if (validationResult.IsValid)
+        {
+            using var scope = Factory.Services.CreateScope();
+            
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == registerRequest.Email);
+            
+            user!.VerifyEmail();
+
+            await context.SaveChangesAsync();
+        }
+        
         var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
         
         // Assert

@@ -39,7 +39,7 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<boo
         _context.Users.Add(user);
         
         // refreshToken
-        var refreshToken = RefreshToken.Create("", user.Id);
+        var refreshToken = RefreshToken.Create("sample", user.Id);
         
         // Security reasons
         refreshToken.MakeExpire();

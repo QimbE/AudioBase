@@ -42,21 +42,6 @@ public class RegisterEndpointTests: BaseIntegrationTest
         }
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
-        IEnumerable<string>? cookies = response.Headers.SingleOrDefault(header => header.Key == "Set-Cookie").Value;
-
-        cookies.Single().Should().StartWith("refreshToken");
-        
-        var responseWrapper = await response.Content.ReadFromJsonAsync<ResponseWithData<UserResponseDto>>();
-        
-        responseWrapper.Should().NotBeNull();
-
-        var content = responseWrapper.Data;
-        
-        content.Username.Should().BeEquivalentTo(request.Name);
-        content.AccessToken.Should().NotBeNullOrWhiteSpace();
-        content.UserId.Should().NotBeEmpty();
-        
     }
     
     [Fact]
