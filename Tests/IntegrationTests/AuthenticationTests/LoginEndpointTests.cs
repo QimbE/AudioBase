@@ -3,6 +3,9 @@ using System.Net.Http.Json;
 using Application.Authentication.Login;
 using Application.Authentication.Register;
 using FluentAssertions;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Presentation.ResponseHandling.Response;
 
 namespace IntegrationTests.AuthenticationTests;
@@ -36,6 +39,20 @@ public class LoginEndpointTests: BaseIntegrationTest
         
         // Act
         await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        
+        if (validationResult.IsValid)
+        {
+            using var scope = Factory.Services.CreateScope();
+            
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == registerRequest.Email);
+            
+            user!.VerifyEmail();
+
+            await context.SaveChangesAsync();
+        }
+        
         var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
         
         // Assert
@@ -77,6 +94,27 @@ public class LoginEndpointTests: BaseIntegrationTest
         var loginRequest = new LoginCommand(actualEmail, actualPassword);
 
         var registerRequest = new RegisterCommand("SomeName123123", expectedEmail, expectedPassword);
+        
+        // Act
+        await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Fact]
+    public async Task LoginEndpoint_ShouldReturn_BadRequestOnUnverifiedEmail()
+    {
+        // Arrange
+        var email = "hehehehuh123@mail.ru";
+        var password = "bimbimbim123";
+        
+        var httpClient = Factory.CreateClient();
+
+        var loginRequest = new LoginCommand(email, password);
+
+        var registerRequest = new RegisterCommand("SomeName123123", email, password);
         
         // Act
         await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);

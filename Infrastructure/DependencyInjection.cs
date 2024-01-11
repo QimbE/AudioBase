@@ -4,6 +4,7 @@ using Application.DataAccess;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Cache;
 using Infrastructure.Data;
+using Infrastructure.Email;
 using Infrastructure.Idempotence;
 using Infrastructure.Outbox;
 using MediatR;
@@ -68,7 +69,7 @@ public static class DependencyInjection
                         .ForJob(jobKey)
                         .WithSimpleSchedule(
                             schedule => schedule
-                                .WithIntervalInSeconds(10)
+                                .WithIntervalInSeconds(30)
                                 .RepeatForever()
                             )
                     );
@@ -83,6 +84,8 @@ public static class DependencyInjection
         // ...
         // Profit!
         services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+
+        services.AddScoped<IEmailSender, EmailSender>();
         
         return services;
     }

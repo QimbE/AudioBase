@@ -1,6 +1,8 @@
 ﻿using System.Security.Authentication;
+using Application.Authentication;
 using Application.Authentication.Login;
 using Application.Authentication.Register;
+using Domain.Users.Exceptions;
 using FluentAssertions;
 
 namespace ApplicationTests.Authentication;
@@ -30,7 +32,7 @@ public class LoginCommandHandlerTests: AuthTestingBase
         var registerRequest = new RegisterCommand("123", validEmail, validPassword);
         var loginRequest = new LoginCommand(actualEmail, actualPassword);
 
-        var registerHandler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
+        var registerHandler = new RegisterCommandHandler(Context, HashProvider);
         var loginHandler = new LoginCommandHandler(Context, HashProvider, JwtProvider);
 
         registerHandler.Handle(registerRequest, default).GetAwaiter().GetResult();
@@ -61,10 +63,16 @@ public class LoginCommandHandlerTests: AuthTestingBase
         var registerRequest = new RegisterCommand("123", email, password);
         var loginRequest = new LoginCommand(email, password);
 
-        var registerHandler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
+        var registerHandler = new RegisterCommandHandler(Context, HashProvider);
         var loginHandler = new LoginCommandHandler(Context, HashProvider, JwtProvider);
 
         registerHandler.Handle(registerRequest, default).GetAwaiter().GetResult();
+        
+        var user = Context.Users.FirstOrDefault(u => u.Email == registerRequest.Email);
+            
+        user!.VerifyEmail();
+
+        Context.SaveChangesAsync().GetAwaiter().GetResult();
         
         // Act
         var result = loginHandler.Handle(loginRequest, default).GetAwaiter().GetResult();
@@ -82,5 +90,36 @@ public class LoginCommandHandlerTests: AuthTestingBase
                  !string.IsNullOrWhiteSpace(x.AccessToken) &&
                  x.Username == registerRequest.Name
         );
+    }
+    
+    [Fact]
+    public void Login_Should_ReturnBadRequest_OnUnverifiedEmail()
+    {
+        // Arrange
+        RecreateDbContext();
+
+        var email = "1@1.ru";
+        var password = "bimbimbim123";
+        
+        var registerRequest = new RegisterCommand("123", email, password);
+        var loginRequest = new LoginCommand(email, password);
+
+        var registerHandler = new RegisterCommandHandler(Context, HashProvider);
+        var loginHandler = new LoginCommandHandler(Context, HashProvider, JwtProvider);
+
+        registerHandler.Handle(registerRequest, default).GetAwaiter().GetResult();
+        
+        // Act
+        var result = loginHandler.Handle(loginRequest, default).GetAwaiter().GetResult();
+        
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+
+        var response = result.Match<Exception>(
+            success => null,
+            failure => failure
+        );
+
+        response.Should().BeOfType<UnverifiedEmailException>();
     }
 }

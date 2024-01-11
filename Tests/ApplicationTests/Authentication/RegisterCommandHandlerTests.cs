@@ -28,7 +28,7 @@ public class RegisterCommandHandlerTests: AuthTestingBase
         
         var request = new RegisterCommand("Boban", secondEmail, "12345678");
 
-        var handler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
+        var handler = new RegisterCommandHandler(Context, HashProvider);
 
         // Act
         var result = handler.Handle(request, default).GetAwaiter().GetResult();
@@ -55,7 +55,7 @@ public class RegisterCommandHandlerTests: AuthTestingBase
         
         var request = new RegisterCommand("Boban", "bimbimbim@bambam.ru", "12345678");
 
-        var handler = new RegisterCommandHandler(Context, HashProvider, JwtProvider);
+        var handler = new RegisterCommandHandler(Context, HashProvider);
 
         // Act
         var result = handler.Handle(request, default).GetAwaiter().GetResult();
@@ -63,15 +63,11 @@ public class RegisterCommandHandlerTests: AuthTestingBase
         // Assert
         result.IsSuccess.Should().BeTrue();
         
-        var response = result.Match<UserResponse>(
+        var response = result.Match<bool>(
             success => success,
-            failure => null
+            failure => false
         );
 
-        response.Should().Match<UserResponse>(
-            x => !string.IsNullOrWhiteSpace(x.RefreshToken) &&
-                 !string.IsNullOrWhiteSpace(x.AccessToken) &&
-                 x.Username == request.Name
-            );
+        response.Should().BeTrue();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
+using Domain.Users.Events;
 using Throw;
 
 namespace Domain.Users;
@@ -29,6 +30,11 @@ public class User
             _email = value.Throw().IfNullOrWhiteSpace(x => x);
         }
     }
+    
+    /// <summary>
+    /// Have user verified his/her email?
+    /// </summary>
+    public bool IsVerified { get; protected set; }
 
     private string _password;
     /// <summary>
@@ -63,19 +69,23 @@ public class User
         
     }
 
-    protected User(string name, string email, string password, int roleId)
+    protected User(string name, string email, string password, int roleId, bool isVerified)
         : base(Guid.NewGuid())
     {
         Name = name;
         Email = email;
         Password = password;
         RoleId = roleId;
+        IsVerified = isVerified;
     }
 
     public static User Create(string name, string email, string password, int roleId)
     {
-        // TODO: Add event raising
-        return new(name, email, password, roleId);
+        User result = new(name, email, password, roleId, false);
+        
+        result.RaiseEvent(new UserCreatedDomainEvent(result.Id));
+        
+        return result;
     }
 
     public void Update(string name, string email, string password, int roleId)
@@ -84,5 +94,13 @@ public class User
         Email = email;
         Password = password;
         RoleId = roleId;
+    }
+
+    /// <summary>
+    /// Sets IsVerified to true
+    /// </summary>
+    public void VerifyEmail()
+    {
+        IsVerified = true;
     }
 }

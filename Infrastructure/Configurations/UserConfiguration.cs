@@ -20,6 +20,8 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
 
         builder.Property(u => u.RoleId).IsRequired();
 
+        builder.Property(u => u.IsVerified).IsRequired();
+
         // One-to-one with refresh token
         builder
             .HasOne(u => u.RefreshToken)
@@ -30,6 +32,7 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
         builder
             .HasOne(u => u.Role)
             .WithMany()
-            .HasForeignKey(u => u.RoleId);
+            .HasForeignKey(u => u.RoleId)
+            .IsRequired();
     }
 }

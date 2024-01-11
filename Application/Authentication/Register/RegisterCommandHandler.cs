@@ -9,20 +9,18 @@ namespace Application.Authentication.Register;
 /// <summary>
 /// Registres new DEFAULT User (Not an admin or smth)
 /// </summary>
-public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<UserResponse>>
+public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IHashProvider _hashProvider;
-    private readonly IJwtProvider _jwtProvider;
 
-    public RegisterCommandHandler(IApplicationDbContext context, IHashProvider hashProvider, IJwtProvider jwtProvider)
+    public RegisterCommandHandler(IApplicationDbContext context, IHashProvider hashProvider)
     {
         _context = context;
         _hashProvider = hashProvider;
-        _jwtProvider = jwtProvider;
     }
     
-    public async Task<Result<UserResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         // if there is the same email
         if (await _context.Users.AnyAsync(
@@ -39,21 +37,17 @@ public class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<Use
         var user = User.Create(request.Name, request.Email, hash, Role.DefaultUser);
 
         _context.Users.Add(user);
-
+        
         // refreshToken
-        var refreshToken = RefreshToken.Create(_jwtProvider.GenerateRefreshToken(), user.Id);
+        var refreshToken = RefreshToken.Create("sample", user.Id);
+        
+        // Security reasons
+        refreshToken.MakeExpire();
 
         _context.RefreshTokens.Add(refreshToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var accessToken = await _jwtProvider.Generate(user);
-
-        return new UserResponse(
-            user.Id,
-            user.Name,
-            accessToken,
-            refreshToken.Value
-            );
+        return true;
     }
 }
