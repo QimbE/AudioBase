@@ -17,7 +17,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddApplication(builder.Configuration)
+            .AddApplication()
             .AddInfrastructure(builder.Configuration)
             .AddPresentation();
         

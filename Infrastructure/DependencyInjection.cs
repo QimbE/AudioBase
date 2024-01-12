@@ -1,6 +1,8 @@
+using System.Text;
 using Application.Authentication;
 using Infrastructure.Authentication;
 using Application.DataAccess;
+using Infrastructure.Authentication.Extensions;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Cache;
 using Infrastructure.Data;
@@ -8,9 +10,11 @@ using Infrastructure.Email;
 using Infrastructure.Idempotence;
 using Infrastructure.Outbox;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using StackExchange.Redis;
 using Throw;
@@ -76,16 +80,38 @@ public static class DependencyInjection
         });
 
         services.AddQuartzHostedService();
-
-        // Decorating all notification handlers to be idempotent
-        // TODO: This probably does not work, because i've highly likely missdesigned DomainEvent :D (See next lines to know how to fix)
-        // Extract IDomainEvent interface implementing INotification, also do this with INotificationHandler
-        // Replace all DomainEvent references in infrastructure layer with interface (don't forget actual handlers)
-        // ...
-        // Profit!
+        
         services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 
         services.AddScoped<IEmailSender, EmailSender>();
+        
+        // Authentication
+        var secretKey = Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!);
+        
+        var tokenValidationParameter = new TokenValidationParameters
+        {
+            ValidIssuer = configuration["JwtSettings:Issuer"],
+            ValidAudience = configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+
+        services.AddAuthentication(x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(x =>
+        {
+            x.TokenValidationParameters = tokenValidationParameter;
+        });
+        
+        services.AddAuthorization();
+        
+        services.AddRoleAuthorizationPolicies();
         
         return services;
     }
