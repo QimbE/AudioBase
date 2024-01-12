@@ -8,12 +8,14 @@ using Infrastructure.Cache;
 using Infrastructure.Data;
 using Infrastructure.Email;
 using Infrastructure.Idempotence;
+using Infrastructure.Options;
 using Infrastructure.Outbox;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using StackExchange.Redis;
@@ -25,6 +27,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddOptions<JwtSettings>()
+            .BindConfiguration(nameof(JwtSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
         // Db context configuration
         services.AddDbContext<ApplicationDbContext>((provider, options) =>
             options

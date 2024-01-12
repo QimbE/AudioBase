@@ -2,6 +2,7 @@ using Application;
 using Carter;
 using Infrastructure;
 using Infrastructure.Data;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Presentation;
@@ -15,7 +16,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        
         builder.Services
             .AddApplication()
             .AddInfrastructure(builder.Configuration)
