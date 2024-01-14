@@ -3,7 +3,7 @@ using HotChocolate.Types;
 
 namespace Application.GraphQL.TypeConfigurations;
 
-public class UserType: ObjectType<User>
+public class UserType: EntityType<User>
 {
     protected override void Configure(IObjectTypeDescriptor<User> descriptor)
     {
