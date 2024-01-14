@@ -39,6 +39,7 @@ public class RefreshTokenTests
     {
         // Arrange
         var token = RefreshToken.Create("random123", Guid.NewGuid());
+        token.Update("bimbimbambam");
         
         // Act
         token.MakeExpire();
