@@ -35,11 +35,8 @@ public class LogoutEndpointTests: BaseIntegrationTest
         var httpClient = Factory.CreateClient();
 
         var fakeToken = "bimbimbimbambambam";
-        var actualToken = "hehehehuh";
         
         var user = User.Create("bimbim", "bambam", "123123", Role.DefaultUser);
-
-        var token = RefreshToken.Create(actualToken, user.Id);
         
         httpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={fakeToken}"]);
 
@@ -48,7 +45,6 @@ public class LogoutEndpointTests: BaseIntegrationTest
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
-        context.RefreshTokens.Add(token);
 
         await context.SaveChangesAsync();
         
@@ -72,7 +68,8 @@ public class LogoutEndpointTests: BaseIntegrationTest
         
         var user = User.Create("bimbim", "bambam", "123123", Role.DefaultUser);
 
-        var token = RefreshToken.Create(actualToken, user.Id);
+        user.RefreshToken.Update(actualToken);
+        user.VerifyEmail();
         
         httpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={actualToken}"]);
 
@@ -81,10 +78,8 @@ public class LogoutEndpointTests: BaseIntegrationTest
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
-        context.RefreshTokens.Add(token);
 
         await context.SaveChangesAsync();
-        
         
         // Act
         var response = await httpClient.PutAsync("Authentication/Logout", null);

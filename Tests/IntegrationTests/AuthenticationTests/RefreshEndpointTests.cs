@@ -36,11 +36,8 @@ public class RefreshEndpointTests: BaseIntegrationTest
         var httpClient = Factory.CreateClient();
 
         var fakeToken = "bimbimbimbambambam";
-        var actualToken = "hehehehuh";
         
         var user = User.Create("bimbim", "bambam", "123123", Role.DefaultUser);
-
-        var token = RefreshToken.Create(actualToken, user.Id);
         
         httpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={fakeToken}"]);
 
@@ -49,7 +46,6 @@ public class RefreshEndpointTests: BaseIntegrationTest
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
-        context.RefreshTokens.Add(token);
 
         await context.SaveChangesAsync();
         
@@ -69,11 +65,12 @@ public class RefreshEndpointTests: BaseIntegrationTest
         // Arrange
         var httpClient = Factory.CreateClient();
         
-        var actualToken = "hehehehuh";
-        
         var user = User.Create("bimbim", "bambam", "123123", Role.DefaultUser);
 
-        var token = RefreshToken.Create(actualToken, user.Id);
+        user.RefreshToken.Update("123123123");
+        user.VerifyEmail();
+        
+        var actualToken = user.RefreshToken.Value;
         
         httpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={actualToken}"]);
 
@@ -82,10 +79,8 @@ public class RefreshEndpointTests: BaseIntegrationTest
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
-        context.RefreshTokens.Add(token);
 
         await context.SaveChangesAsync();
-        
         
         // Act
         var response = await httpClient.PutAsync("Authentication/Refresh", null);

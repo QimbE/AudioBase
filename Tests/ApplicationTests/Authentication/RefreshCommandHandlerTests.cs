@@ -17,14 +17,10 @@ public class RefreshCommandHandlerTests: AuthTestingBase
     {
         var user1 = User.Create("123", "test", "123123", 1);
         
-        // Expired token
-        var expiredToken = RefreshToken.Create("123123", user1.Id);
-        expiredToken.MakeExpire();
-        
         // Token that does not exist
         var nonExistentToken = RefreshToken.Create("123", Guid.NewGuid());
         
-        return [[user1, expiredToken], [user1, nonExistentToken]];
+        return [[user1, user1.RefreshToken], [user1, nonExistentToken]];
     }
     
     [Theory]
@@ -67,17 +63,17 @@ public class RefreshCommandHandlerTests: AuthTestingBase
         RecreateDbContext();
         
         var user = User.Create("123", "test", "123123", 1);
-
-        var token = RefreshToken.Create("123123123123", user.Id);
         
+        user.VerifyEmail();
+        
+        user.RefreshToken.Update(JwtProvider.GenerateRefreshToken());
         Context.Users.Add(user);
-        Context.RefreshTokens.Add(token);
         
         Context.SaveChangesAsync().GetAwaiter().GetResult();
 
         var handler = new RefreshCommandHandler(Context, JwtProvider);
 
-        var request = new RefreshCommand(token.Value);
+        var request = new RefreshCommand(user.RefreshToken.Value);
         
         // Act
         var res = handler.Handle(request, default).GetAwaiter().GetResult();
