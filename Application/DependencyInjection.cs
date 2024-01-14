@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Application.Authentication.Extensions;
 using Application.Behaviors;
 using Application.ExceptionHandlers;
 using Application.GraphQL;
@@ -14,7 +13,7 @@ namespace Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         var assembly = typeof(DependencyInjection).Assembly;
 
@@ -36,34 +35,6 @@ public static class DependencyInjection
                 s => s.GetRequiredService<IConnectionMultiplexer>().GetDatabase(),
                 TimeSpan.FromMinutes(2)
                 );
-        
-        // Authentication
-        var secretKey = Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!);
-        
-        var tokenValidationParameter = new TokenValidationParameters
-        {
-            ValidIssuer = configuration["JwtSettings:Issuer"],
-            ValidAudience = configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(secretKey),
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true
-        };
-
-        services.AddAuthentication(x =>
-        {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(x =>
-        {
-            x.TokenValidationParameters = tokenValidationParameter;
-        });
-        
-        services.AddAuthorization();
-
-        services.AddRoleAuthorizationPolicies();
         
         return services;
     }

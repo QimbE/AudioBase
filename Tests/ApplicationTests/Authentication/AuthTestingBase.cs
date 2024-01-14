@@ -1,9 +1,11 @@
 ﻿using Application.Authentication;
 using Infrastructure.Authentication;
 using Infrastructure.Data;
+using Infrastructure.Options;
 using Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace ApplicationTests.Authentication;
@@ -25,16 +27,17 @@ public abstract class AuthTestingBase
 
         Context = new TestDbContext(builder.Options);
         
-        var sectionMock = Substitute.For<IConfigurationSection>();
-
-        sectionMock["Key"].Returns("hehehehuhhehehehehehehehuhhwhwhwhhh");
-        sectionMock["Issuer"].Returns("huh");
-        sectionMock["Audience"].Returns("bimbimbambam");
-        sectionMock["ExpiryTime"].Returns("00:30:00");
+        var sectionMock = new JwtSettings
+        {
+            Issuer = "huh",
+            Audience = "bimbimbambam",
+            Key = "hehehehuhhehehehehehehehuhhwhwhwhhh",
+            ExpiryTime = TimeSpan.FromMinutes(30)
+        };
         
-        var configMock = Substitute.For<IConfiguration>();
+        var configMock = Substitute.For<IOptions<JwtSettings>>();
 
-        configMock.GetSection("JwtSettings").Returns(sectionMock);
+        configMock.Value.Returns(sectionMock);
 
         JwtProvider = new JwtProvider(configMock);
         HashProvider = new HashProvider();
