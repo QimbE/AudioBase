@@ -79,9 +79,16 @@ public class User
         IsVerified = isVerified;
     }
 
-    public static User Create(string name, string email, string password, int roleId)
+    public static User Create(
+        string name,
+        string email,
+        string password,
+        int roleId
+        )
     {
         User result = new(name, email, password, roleId, false);
+
+        result.RefreshToken = RefreshToken.Create("sample", result.Id);
         
         result.RaiseEvent(new UserCreatedDomainEvent(result.Id));
         

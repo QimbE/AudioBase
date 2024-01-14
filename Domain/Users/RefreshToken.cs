@@ -58,7 +58,7 @@ public class RefreshToken
     {
         return new(
             value,
-            DateTime.UtcNow.AddDays(LifeTime),
+            DateTime.UtcNow,
             userId
             );
     }

@@ -26,7 +26,8 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
         builder
             .HasOne(u => u.RefreshToken)
             .WithOne(r => r.Owner)
-            .HasForeignKey<RefreshToken>(r => r.Id);
+            .HasForeignKey<RefreshToken>(r => r.Id)
+            .IsRequired();
 
         // Many-to-one with role
         builder
