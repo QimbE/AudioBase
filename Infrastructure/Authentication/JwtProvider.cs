@@ -5,20 +5,22 @@ using System.Security.Cryptography;
 using System.Text;
 using Application.Authentication;
 using Domain.Users;
+using Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Authentication;
 
 public class JwtProvider: IJwtProvider
 {
-    private readonly IConfiguration _configuration;
+    private readonly IOptions<JwtSettings> _settings;
 
-    public JwtProvider(IConfiguration configuration)
+    public JwtProvider(IOptions<JwtSettings> settings)
     {
-        _configuration = configuration;
+        _settings = settings;
     }
-    
+
     public Task<string> Generate(User user)
     {
         var claims = new Claim[]
@@ -28,19 +30,17 @@ public class JwtProvider: IJwtProvider
             new(JwtRegisteredClaimNames.Email, user.Email)
         };
         
-        var settings = _configuration.GetSection("JwtSettings");
-        
         var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(settings["Key"])),
+                Encoding.UTF8.GetBytes(_settings.Value.Key)),
             SecurityAlgorithms.HmacSha256);
         
         var token = new JwtSecurityToken(
-            settings["Issuer"],
-            settings["Audience"],
+            _settings.Value.Issuer,
+            _settings.Value.Audience,
             claims,
             null,
             DateTime.UtcNow.Add(
-                TimeSpan.ParseExact(settings["ExpiryTime"]!, "hh\\:mm\\:ss", CultureInfo.InvariantCulture)
+                _settings.Value.ExpiryTime
             ),
             signingCredentials
         );

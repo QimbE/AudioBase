@@ -1,7 +1,9 @@
 ﻿using Domain.Users;
 using FluentAssertions;
 using Infrastructure.Authentication;
+using Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace InfrastructureTests;
@@ -12,7 +14,17 @@ public class JwtProviderTests
     public void GenerateRefreshToken_ShouldReturn_ValidToken()
     {
         // Arrange
-        var configMock = Substitute.For<IConfiguration>();
+        var sectionMock = new JwtSettings
+        {
+            Issuer = "huh",
+            Audience = "bimbimbambam",
+            Key = "hehehehuhhehehehehehehehuhhwhwhwhhh",
+            ExpiryTime = TimeSpan.FromMinutes(30)
+        };
+        
+        var configMock = Substitute.For<IOptions<JwtSettings>>();
+
+        configMock.Value.Returns(sectionMock);
 
         var provider = new JwtProvider(configMock);
 
@@ -36,16 +48,17 @@ public class JwtProviderTests
             Role.List.First()
             );
 
-        var sectionMock = Substitute.For<IConfigurationSection>();
-
-        sectionMock["Key"].Returns("hehehehuhhehehehehehehehuhhwhwhwhhh");
-        sectionMock["Issuer"].Returns("huh");
-        sectionMock["Audience"].Returns("bimbimbambam");
-        sectionMock["ExpiryTime"].Returns("00:30:00");
+        var sectionMock = new JwtSettings
+        {
+            Issuer = "huh",
+            Audience = "bimbimbambam",
+            Key = "hehehehuhhehehehehehehehuhhwhwhwhhh",
+            ExpiryTime = TimeSpan.FromMinutes(30)
+        };
         
-        var configMock = Substitute.For<IConfiguration>();
+        var configMock = Substitute.For<IOptions<JwtSettings>>();
 
-        configMock.GetSection("JwtSettings").Returns(sectionMock);
+        configMock.Value.Returns(sectionMock);
 
         var provider = new JwtProvider(configMock);
         

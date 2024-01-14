@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace Application.Authentication.Extensions;
+namespace Infrastructure.Authentication.Extensions;
 
 public static class AuthorizationExtensions
 {
