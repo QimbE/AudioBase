@@ -33,7 +33,7 @@ services:
       - "6379:6379"
   audiobase_elasticsearch:
     container_name: audiobase_elasticsearch
-    image: elasticsearch:latest
+    image: elasticsearch:8.11.3
     ports:
       - "9200:9200"
     environment:
@@ -43,7 +43,7 @@ services:
       - audiobase_elasticsearch:/usr/share/elasticsearch/data
   audiobase_kibana:
     container_name: audiobase_kibana
-    image: kibana:latest
+    image: kibana:8.11.3
     ports:
       - "5601:5601"
     depends_on: 
