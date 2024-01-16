@@ -18,7 +18,8 @@ public class Users: ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("User")
-            .WithTags("User");
+            .WithTags("User")
+            .WithOpenApi();
 
         // Change user role endpoint
         group.MapPatch(
@@ -30,8 +31,8 @@ public class Users: ICarterModule
                     return await result.MapToResponse(cancellationToken);
                 })
             .Produces<Ok<BaseResponse>>()
-            .Produces<NotFound>()
-            .Produces<BadRequest>()
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .UserShouldBeAtLeast(Role.Admin)
             .WithSummary("Changes role of specific user");
     }
