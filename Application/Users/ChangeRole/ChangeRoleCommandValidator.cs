@@ -11,8 +11,7 @@ public class ChangeRoleCommandValidator: AbstractValidator<ChangeRoleCommand>
 
         RuleFor(c => c.RoleName)
             // Must be convertable to actual role
-            .Must(
-                x => Role.TryFromName(x, true, out var _)
-                );
+            .Must(x => Role.TryFromName(x, true, out var _))
+            .WithMessage(x => $"There is no role with name {x.RoleName}");
     }
 }
