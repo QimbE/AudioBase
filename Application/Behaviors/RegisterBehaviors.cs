@@ -3,6 +3,7 @@ using Application.Authentication.Login;
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
+using Application.Users.ChangeRole;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,7 +33,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<RegisterCommand, bool>()
             .AddValidationBehavior<LoginCommand, UserResponse>()
             .AddValidationBehavior<RefreshCommand, TokenResponse>()
-            .AddValidationBehavior<LogoutCommand, bool>();
+            .AddValidationBehavior<LogoutCommand, bool>()
+            .AddValidationBehavior<ChangeRoleCommand, bool>();
     }
     
     /// <summary>
