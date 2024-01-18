@@ -1,12 +1,8 @@
-﻿using System.Text;
-using Application.Behaviors;
+﻿using Application.Behaviors;
 using Application.ExceptionHandlers;
 using Application.GraphQL;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 
 namespace Application;
