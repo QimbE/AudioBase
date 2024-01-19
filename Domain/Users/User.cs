@@ -47,7 +47,8 @@ public class User
         protected set
         {
             _password = value.Throw().IfNullOrWhiteSpace(x => x);
-        } }
+        }
+    }
 
     private int _roleId;
     public int RoleId
