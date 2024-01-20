@@ -19,6 +19,7 @@ public class ChangeRoleCommandHandlerTests
     public void ChangeRole_Should_ReturnException_OnInvalidId()
     {
         // Arrange
+        RecreateDbContext();
         var request = new ChangeRoleCommand(Guid.NewGuid(), "Admin");
         
         var handler = new ChangeRoleCommandHandler(Context);
@@ -41,6 +42,7 @@ public class ChangeRoleCommandHandlerTests
     public void ChangeRole_Should_ReturnTrue_OnValidRequest()
     {
         // Arrange
+        RecreateDbContext();
         var user = User.Create("bimbim", "bam@bam.ru", "BimBam123", Role.CatalogAdmin);
         
         var request = new ChangeRoleCommand(user.Id, "Admin");
