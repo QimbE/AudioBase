@@ -29,7 +29,7 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
         
         var user = User.Create("Bim", "Bombom", "123123123", Role.Admin);
 
-        var accessToken = await jwtProvider.Generate(user);
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
@@ -54,7 +54,7 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
         
         var user = User.Create("Bim", "Bombom", "123123123", Role.Admin);
 
-        var accessToken = await jwtProvider.Generate(user);
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
@@ -85,7 +85,7 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
 
         await context.SaveChangesAsync();
         
-        var accessToken = await jwtProvider.Generate(user);
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         

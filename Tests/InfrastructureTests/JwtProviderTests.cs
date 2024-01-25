@@ -63,7 +63,7 @@ public class JwtProviderTests
         var provider = new JwtProvider(configMock);
         
         // Act
-        var res = provider.Generate(user).GetAwaiter().GetResult();
+        var res = provider.GenerateAccessToken(user).GetAwaiter().GetResult();
         
         // Assert
         res.Should().NotBeNull();

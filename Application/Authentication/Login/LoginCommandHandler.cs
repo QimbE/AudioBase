@@ -55,7 +55,7 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var accessToken = await _jwtProvider.Generate(userFromDb);
+        var accessToken = await _jwtProvider.GenerateAccessToken(userFromDb);
 
         return new UserResponse(
             userFromDb.Id,

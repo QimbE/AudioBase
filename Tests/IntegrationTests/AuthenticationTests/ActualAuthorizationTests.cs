@@ -36,7 +36,7 @@ public class ActualAuthorizationTests: BaseIntegrationTest
         
         var user = User.Create("Bim", "Bombom", "123123123", notAllowedRole);
 
-        var accessToken = await jwtProvider.Generate(user);
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
 
