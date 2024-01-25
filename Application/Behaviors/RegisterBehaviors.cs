@@ -3,6 +3,7 @@ using Application.Authentication.Login;
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
+using Application.Authentication.VerifyEmail;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
 using MediatR;
@@ -36,7 +37,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<RefreshCommand, TokenResponse>()
             .AddValidationBehavior<LogoutCommand, bool>()
             .AddValidationBehavior<ChangeRoleCommand, bool>()
-            .AddValidationBehavior<ChangePasswordCommand, bool>();
+            .AddValidationBehavior<ChangePasswordCommand, bool>()
+            .AddValidationBehavior<VerifyEmailCommand, bool>();
     }
     
     /// <summary>
