@@ -32,6 +32,11 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
         
+        services.AddOptions<EmailSettings>()
+            .BindConfiguration(nameof(EmailSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
         // Db context configuration
         services.AddDbContext<ApplicationDbContext>((provider, options) =>
             options
