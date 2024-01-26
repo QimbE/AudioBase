@@ -16,11 +16,13 @@ public class EmailSender: IEmailSender
 {
     private readonly EmailSettings _settings;
     private readonly IJwtProvider _jwtProvider;
+    private readonly SmtpClient _client;
 
     private const string VerificationMailSubject = "AudioBase Email verification";
-    public EmailSender(IOptionsMonitor<EmailSettings> settings, IJwtProvider jwtProvider)
+    public EmailSender(IOptionsMonitor<EmailSettings> settings, IJwtProvider jwtProvider, SmtpClient client)
     {
         _jwtProvider = jwtProvider;
+        _client = client;
         _settings = settings.CurrentValue;
     }
     
@@ -43,13 +45,12 @@ public class EmailSender: IEmailSender
                 await _jwtProvider.GenerateVerificationToken(user)
                 )
         };
-
-        using var client = new SmtpClient();
-        client.Connect(_settings.Host, _settings.Port, SecureSocketOptions.SslOnConnect);
-        client.AuthenticationMechanisms.Remove("XOAUTH2");
-        client.Authenticate(_settings.UserName, _settings.Password);
         
-        client.Send(email);
+        _client.Connect(_settings.Host, _settings.Port, SecureSocketOptions.SslOnConnect);
+        _client.AuthenticationMechanisms.Remove("XOAUTH2");
+        _client.Authenticate(_settings.UserName, _settings.Password);
+        
+        _client.Send(email);
     }
 }
 
