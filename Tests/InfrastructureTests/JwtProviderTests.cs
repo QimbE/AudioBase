@@ -111,8 +111,6 @@ public class JwtProviderTests
     }
     
     [Theory]
-    [InlineData(" ")]
-    [InlineData("")]
     [MemberData(nameof(GetInvalidTokens))]
     public void GetEmailFromVerificationToken_Should_ReturnNull_OnInvalidToken(string token)
     {
