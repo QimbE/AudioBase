@@ -48,6 +48,8 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
         // if the user is not verified
         if (!userFromDb.IsVerified)
         {
+            userFromDb.RequestVerification();
+            await _context.SaveChangesAsync(cancellationToken);
             return new(new UnverifiedEmailException());
         }
         

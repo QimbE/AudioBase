@@ -111,4 +111,9 @@ public class User
     {
         IsVerified = true;
     }
+    
+    public void RequestVerification()
+    {
+        RaiseEvent(new UserCreatedDomainEvent(this.Id));
+    }
 }
