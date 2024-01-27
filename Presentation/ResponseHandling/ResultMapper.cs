@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Security.Authentication;
 using Application.Authentication;
-using Application.Authentication.Register;
 using Domain.Abstractions.Exceptions;
 using Domain.Users.Exceptions;
 using FluentValidation;
@@ -97,6 +96,7 @@ public static class ResultMapper
             ValidationException e => e.ToValidationResponse(),
             UnverifiedEmailException e => (StatusCodes.Status400BadRequest, e.Message, null),
             NotFoundException e => (StatusCodes.Status404NotFound, e.Message, null),
+            UnauthorizedAccessException e => (StatusCodes.Status401Unauthorized, e.Message, null),
             _ => (StatusCodes.Status500InternalServerError, "An unmapable error occured.",
                 new Dictionary<string, object?>())
         };
