@@ -28,6 +28,7 @@ public class VerifyEmailEndpointTests: BaseIntegrationTest
     public async Task VerifyEmail_Should_ReturnUnauthorized_OnInvalidToken()
     {
         // Arrange
+        await RecreateDatabase();
         var httpClient = Factory.CreateClient();
         
         using var scope = Factory.Services.CreateScope();
@@ -47,6 +48,7 @@ public class VerifyEmailEndpointTests: BaseIntegrationTest
     public async Task VerifyEmail_Should_ReturnNotFound_OnNonexistentUser()
     {
         // Arrange
+        await RecreateDatabase();
         var httpClient = Factory.CreateClient();
         
         using var scope = Factory.Services.CreateScope();
