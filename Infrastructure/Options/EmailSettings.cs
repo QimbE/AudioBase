@@ -7,12 +7,22 @@ public class EmailSettings
     [Required]
     public string DisplayName { get; init; }
     
+    /// <summary>
+    /// Actual email address of sender
+    /// </summary>
     [Required]
+    [EmailAddress]
     public string From { get; init; }
     
+    /// <summary>
+    /// Smtp client login
+    /// </summary>
     [Required]
     public string UserName { get; init; }
     
+    /// <summary>
+    /// Smtp client password
+    /// </summary>
     [Required]
     public string Password { get; init; }
     
