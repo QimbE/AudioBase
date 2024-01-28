@@ -10,6 +10,7 @@ using Infrastructure.Email;
 using Infrastructure.Idempotence;
 using Infrastructure.Options;
 using Infrastructure.Outbox;
+using MailKit.Net.Smtp;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,11 @@ public static class DependencyInjection
     {
         services.AddOptions<JwtSettings>()
             .BindConfiguration(nameof(JwtSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        services.AddOptions<EmailSettings>()
+            .BindConfiguration(nameof(EmailSettings))
             .ValidateDataAnnotations()
             .ValidateOnStart();
         
@@ -64,6 +70,8 @@ public static class DependencyInjection
         services.AddScoped<IHashProvider, HashProvider>();
 
         services.AddScoped<IJwtProvider, JwtProvider>();
+
+        services.AddScoped<SmtpClient>();
         
         // Quartz background tasks
         services.AddQuartz(configure =>

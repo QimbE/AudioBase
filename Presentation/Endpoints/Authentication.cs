@@ -2,6 +2,7 @@
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
+using Application.Authentication.VerifyEmail;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -101,5 +102,23 @@ public class Authentication: ICarterModule
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
             .WithSummary("Makes refresh token expired");
+        
+        // Verify email endpoint
+        group.MapGet(
+            "VerifyEmail",
+            async ([FromQuery] string token, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var request = new VerifyEmailCommand(token);
+
+                var result = await sender.Send(request, cancellationToken);
+
+                return await result.MapToResponse(cancellationToken); 
+            })
+            .AllowAnonymous()
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .WithSummary("Verifies user's email by validating jwt");
     }
 }

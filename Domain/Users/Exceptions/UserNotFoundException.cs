@@ -9,4 +9,10 @@ public class UserNotFoundException: EntityNotFoundException<User>
     {
         
     }
+
+    public UserNotFoundException()
+        : base("There is no such user in the database")
+    {
+        
+    }
 }

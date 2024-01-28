@@ -36,6 +36,6 @@ public class RefreshCommandHandler: IRequestHandler<RefreshCommand, Result<Token
             return new(new InvalidRefreshTokenException("Invalid token"));
         }
 
-        return new TokenResponse(await _jwtProvider.Generate(userFromDb));
+        return new TokenResponse(await _jwtProvider.GenerateAccessToken(userFromDb));
     }
 }

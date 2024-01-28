@@ -4,7 +4,11 @@ namespace Application.Authentication;
 
 public interface IJwtProvider
 {
-    Task<string> Generate(User user);
+    Task<string> GenerateAccessToken(User user);
+
+    Task<string> GenerateVerificationToken(User user);
     
     string GenerateRefreshToken();
+
+    public string? GetEmailFromVerificationToken(string token);
 }

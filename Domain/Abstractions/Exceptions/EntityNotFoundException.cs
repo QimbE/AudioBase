@@ -17,4 +17,10 @@ public abstract class EntityNotFoundException<T> : NotFoundException
     {
         
     }
+    
+    public EntityNotFoundException(string message)
+        : base(message)
+    {
+        
+    }
 }
