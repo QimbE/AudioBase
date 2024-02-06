@@ -3,6 +3,7 @@ using Application.Authentication.Login;
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
+using Application.Authentication.RequestVerification;
 using Application.Authentication.VerifyEmail;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
@@ -38,7 +39,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<LogoutCommand, bool>()
             .AddValidationBehavior<ChangeRoleCommand, bool>()
             .AddValidationBehavior<ChangePasswordCommand, bool>()
-            .AddValidationBehavior<VerifyEmailCommand, bool>();
+            .AddValidationBehavior<VerifyEmailCommand, bool>()
+            .AddValidationBehavior<RequestVerificationQuery, bool>();
     }
     
     /// <summary>
