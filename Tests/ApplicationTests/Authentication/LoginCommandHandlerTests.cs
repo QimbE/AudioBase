@@ -7,14 +7,8 @@ using FluentAssertions;
 
 namespace ApplicationTests.Authentication;
 
-public class LoginCommandHandlerTests: AuthTestingBase
+public class LoginCommandHandlerTests: AuthTestingBase<LoginCommandHandlerTests>
 {
-    
-    public LoginCommandHandlerTests()
-        : base(typeof(LoginCommandHandlerTests))
-    {
-    }
-    
     [Theory]
     [InlineData("1@1.ru", "Aasdsdsa123123", "1@1.ru", "bim")]
     [InlineData("1@1.ru", "Aasdsdsa123123", "2@1.ru", "bim")]

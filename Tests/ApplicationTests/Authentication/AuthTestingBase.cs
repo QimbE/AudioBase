@@ -10,7 +10,8 @@ using NSubstitute;
 
 namespace ApplicationTests.Authentication;
 
-public abstract class AuthTestingBase
+public abstract class AuthTestingBase<T> 
+    where T : AuthTestingBase<T>
 {
     protected readonly TestDbContext Context;
     protected readonly IJwtProvider JwtProvider;
@@ -18,12 +19,12 @@ public abstract class AuthTestingBase
     
     protected static InsertOutboxMessageInterceptor Interceptor = new();
     
-    public AuthTestingBase(Type toTakeName)
+    public AuthTestingBase()
     {
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         builder
             .AddInterceptors(Interceptor)
-            .UseInMemoryDatabase(toTakeName.Name);
+            .UseInMemoryDatabase(typeof(T).Name);
 
         Context = new TestDbContext(builder.Options);
         

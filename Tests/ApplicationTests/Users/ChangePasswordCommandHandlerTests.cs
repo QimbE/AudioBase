@@ -8,13 +8,8 @@ using FluentAssertions;
 namespace ApplicationTests.Users;
 
 public class ChangePasswordCommandHandlerTests
-    : AuthTestingBase
+    : AuthTestingBase<ChangePasswordCommandHandlerTests>
 {
-    public ChangePasswordCommandHandlerTests()
-        : base(typeof(ChangePasswordCommandHandlerTests))
-    {
-    }
-
     [Fact]
     public void ChangePassword_Should_ReturnException_OnInvalidUserId()
     {
