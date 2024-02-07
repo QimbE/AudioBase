@@ -97,6 +97,7 @@ public static class ResultMapper
             UnverifiedEmailException e => (StatusCodes.Status400BadRequest, e.Message, null),
             NotFoundException e => (StatusCodes.Status404NotFound, e.Message, null),
             UnauthorizedAccessException e => (StatusCodes.Status401Unauthorized, e.Message, null),
+            ArgumentException e => (StatusCodes.Status400BadRequest, e.Message, null),
             _ => (StatusCodes.Status500InternalServerError, "An unmapable error occured.",
                 new Dictionary<string, object?>())
         };

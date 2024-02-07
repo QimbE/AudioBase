@@ -2,6 +2,7 @@
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
 using Application.Authentication.Register;
+using Application.Authentication.RequestVerification;
 using Application.Authentication.VerifyEmail;
 using Carter;
 using MediatR;
@@ -120,5 +121,20 @@ public class Authentication: ICarterModule
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
             .Produces<NotFound>(StatusCodes.Status404NotFound)
             .WithSummary("Verifies user's email by validating jwt");
+        
+        // Request email verification letter
+        group.MapGet(
+            "RequestVerification", 
+            async ([AsParameters] RequestVerificationQuery request, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(request, cancellationToken);
+
+                return await result.MapToResponse(cancellationToken);
+            })
+            .AllowAnonymous()
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .WithSummary("Requests email verification from user with specified id");
     }
 }
