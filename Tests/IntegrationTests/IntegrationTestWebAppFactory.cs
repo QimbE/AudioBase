@@ -34,8 +34,6 @@ public class IntegrationTestWebAppFactory
         .WithImage("redis:latest")
         .Build();
     
-    public string DbConnectionString { get; private set; } = "";
-    
     private Respawner _respawner = default!;
 
     private DatabaseFacade _databaseFacade = default!;
@@ -131,8 +129,6 @@ public class IntegrationTestWebAppFactory
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
-        DbConnectionString = _dbContainer.GetConnectionString();
-        
         await _redisContainer.StartAsync();
     }
 
