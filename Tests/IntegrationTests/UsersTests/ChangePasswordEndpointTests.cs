@@ -23,22 +23,18 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
     public async Task ChangePassword_Should_Return_NotFound_OnNonexistentUser()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var user = User.Create("Bim", "Bombom", "123123123", Role.Admin);
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
 
         var request = new ChangePasswordRequest("123123123", "123123123123332");
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangePassword", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangePassword", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -48,12 +44,7 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
     public async Task ChangePassword_Should_Return_BadRequest_OnInvalidPassword()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-
-        var hashProvider = scope.ServiceProvider.GetRequiredService<IHashProvider>();
+        var hashProvider = Scope.ServiceProvider.GetRequiredService<IHashProvider>();
 
         var password = "bimbimbimBamBamBam";
 
@@ -64,10 +55,7 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
         
         user.VerifyEmail();
         
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
@@ -75,18 +63,18 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
         
         
         
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
 
         var request = new ChangePasswordRequest("12321332344431", "123123123123332");
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangePassword", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangePassword", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -97,12 +85,8 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
     public async Task ChangePassword_Should_Return_Conflict_OnChangeToTheSamePassword()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
 
-        var hashProvider = scope.ServiceProvider.GetRequiredService<IHashProvider>();
+        var hashProvider = Scope.ServiceProvider.GetRequiredService<IHashProvider>();
 
         var password = "bimbimbimBamBamBam";
 
@@ -113,7 +97,7 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
         
         user.VerifyEmail();
         
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
         
 
@@ -123,18 +107,18 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
         
         
         
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
 
         var request = new ChangePasswordRequest(password, password);
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangePassword", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangePassword", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -144,12 +128,7 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
     public async Task ChangePassword_Should_Return_BaseResponse_OnValidRequest()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-
-        var hashProvider = scope.ServiceProvider.GetRequiredService<IHashProvider>();
+        var hashProvider = Scope.ServiceProvider.GetRequiredService<IHashProvider>();
 
         var password = "bimbimbimBamBamBam";
 
@@ -160,10 +139,7 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
         
         user.VerifyEmail();
         
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
@@ -171,18 +147,18 @@ public class ChangePasswordEndpointTests: BaseIntegrationTest
         
         
         
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
 
         var request = new ChangePasswordRequest(password, "bimBomBambam123");
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangePassword", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangePassword", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
