@@ -21,22 +21,18 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
     public async Task ChangeRoleEndpoint_Should_ReturnBadRequest_OnInvalidRoleName()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var user = User.Create("Bim", "Bombom", "123123123", Role.Admin);
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
         var request = new ChangeRoleCommand(user.Id, "qpowejpwkjlkasdasdasa");
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangeRole", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangeRole", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -46,22 +42,18 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
     public async Task ChangeRoleEndpoint_Should_ReturnNotFound_OnNonexistentUserId()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var user = User.Create("Bim", "Bombom", "123123123", Role.Admin);
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
         var request = new ChangeRoleCommand(user.Id, Role.Admin.Name);
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangeRole", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangeRole", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -71,15 +63,11 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
     public async Task ChangeRoleEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var user = User.Create("Bim", "Bombom", "123123123", Role.Admin);
 
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
@@ -87,12 +75,12 @@ public class ChangeRoleEndpointTests: BaseIntegrationTest
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
         var request = new ChangeRoleCommand(user.Id, Role.CatalogAdmin.Name);
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangeRole", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangeRole", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

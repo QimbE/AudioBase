@@ -43,11 +43,8 @@ public class EndpointTests: BaseIntegrationTest
     [Fact]
     public async Task UserEndpoint_Should_ReturnUnauthorized_OnNotAdmin()
     {
-        // Arrange
-        var httpClient = Factory.CreateClient();
-
         // Act
-        var res = await httpClient.GetAsync($"graphql?query={Query}");
+        var res = await HttpClient.GetAsync($"graphql?query={Query}");
         
         // Assert
         var content = await res.Content.ReadAsStringAsync();
@@ -59,8 +56,6 @@ public class EndpointTests: BaseIntegrationTest
     public async Task UserEndpoint_Should_ReturnValidResponse_OnValidRequest()
     {
       // Arrange
-      var httpClient = Factory.CreateClient();
-
       var name = "bimbimbam";
       var email = "bam123bim@bam.ru";
       var password = "bimbimbimBamBamBam";
@@ -69,12 +64,9 @@ public class EndpointTests: BaseIntegrationTest
       
       var loginRequest = new LoginCommand(email, password);
       
-      await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
-      
+      await HttpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
 
-      using var scope = Factory.Services.CreateScope();
-
-      using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+      using var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
       var user = context.Users.SingleOrDefault(u => u.Email == registerRequest.Email);
       
@@ -85,14 +77,14 @@ public class EndpointTests: BaseIntegrationTest
       await context.SaveChangesAsync();
       
 
-      var loginRes = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+      var loginRes = await HttpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
       
       var responseWrapper = await loginRes.Content.ReadFromJsonAsync<ResponseWithData<UserResponseDto>>();
       
-      httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {responseWrapper!.Data.AccessToken}"]);
+      HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {responseWrapper!.Data.AccessToken}"]);
       
       // Act
-      var res = await httpClient.GetAsync($"graphql?query={Query}");
+      var res = await HttpClient.GetAsync($"graphql?query={Query}");
       
       // Assert
       var content = await res.Content.ReadAsStringAsync();

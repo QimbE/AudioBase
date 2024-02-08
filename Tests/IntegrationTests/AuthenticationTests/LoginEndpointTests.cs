@@ -29,8 +29,6 @@ public class LoginEndpointTests: BaseIntegrationTest
     )
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-
         var loginRequest = new LoginCommand(email, password);
 
         var registerRequest = new RegisterCommand(name, email, password);
@@ -38,13 +36,11 @@ public class LoginEndpointTests: BaseIntegrationTest
         var validationResult = await new LoginCommandValidator().ValidateAsync(loginRequest);
         
         // Act
-        await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        await HttpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
         
         if (validationResult.IsValid)
         {
-            using var scope = Factory.Services.CreateScope();
-            
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             var user = await context.Users.FirstOrDefaultAsync(u => u.Email == registerRequest.Email);
             
@@ -53,7 +49,7 @@ public class LoginEndpointTests: BaseIntegrationTest
             await context.SaveChangesAsync();
         }
         
-        var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+        var response = await HttpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
         
         // Assert
         if (!validationResult.IsValid)
@@ -89,15 +85,13 @@ public class LoginEndpointTests: BaseIntegrationTest
         )
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-
         var loginRequest = new LoginCommand(actualEmail, actualPassword);
 
         var registerRequest = new RegisterCommand("SomeName123123", expectedEmail, expectedPassword);
         
         // Act
-        await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
-        var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+        await HttpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        var response = await HttpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -109,16 +103,14 @@ public class LoginEndpointTests: BaseIntegrationTest
         // Arrange
         var email = "hehehehuh123@mail.ru";
         var password = "bimbimbim123";
-        
-        var httpClient = Factory.CreateClient();
 
         var loginRequest = new LoginCommand(email, password);
 
         var registerRequest = new RegisterCommand("SomeName123123", email, password);
         
         // Act
-        await httpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
-        var response = await httpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+        await HttpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+        var response = await HttpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
