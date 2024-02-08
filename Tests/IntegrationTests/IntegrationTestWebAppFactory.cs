@@ -1,11 +1,16 @@
-﻿using AudioBaseAPI;
+﻿using System.Data.Common;
+using AudioBaseAPI;
 using Infrastructure.Data;
 using Infrastructure.Outbox;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Quartz;
+using Respawn;
 using StackExchange.Redis;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
@@ -28,6 +33,12 @@ public class IntegrationTestWebAppFactory
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:latest")
         .Build();
+    
+    public string DbConnectionString { get; private set; } = "";
+    
+    private Respawner _respawner = default!;
+
+    private DatabaseFacade _databaseFacade = default!;
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -60,6 +71,16 @@ public class IntegrationTestWebAppFactory
                 // Removing actual connectionmultiplexer to replace it with one connected to test redis container
                 services.Remove(connectionMultiplexerDescriptor);
             }
+
+            var backgroundTaskDescriptor = services
+                .SingleOrDefault(s => s.ServiceType == typeof(IHostedService) &&
+                                      s.ImplementationType == typeof(QuartzHostedService)
+                                      );
+
+            if (backgroundTaskDescriptor is not null)
+            {
+                services.Remove(backgroundTaskDescriptor);
+            }
             
             services.AddSingleton<IConnectionMultiplexer>(sp => 
                 ConnectionMultiplexer.Connect(
@@ -69,18 +90,57 @@ public class IntegrationTestWebAppFactory
                         AbortOnConnectFail = false
                     }
                 ));
+            
+            var provider = services.BuildServiceProvider();
+            var scope = provider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            _databaseFacade = context.Database;
+            _databaseFacade.Migrate();
+
+            InitRespawner().Wait();
         });
+    }
+    
+    public async Task InitRespawner()
+    {
+        DbConnection conn = await GetOpenedDbConnectionAsync();
+        _respawner = await Respawner.CreateAsync(conn, new RespawnerOptions
+        {
+            SchemasToInclude = ["public"],
+            TablesToIgnore = ["__EFMigrationsHistory", "Roles"],
+            DbAdapter = DbAdapter.Postgres,
+            WithReseed = true
+        });
+    }
+    
+    public async Task ResetDatabaseAsync()
+    {
+        DbConnection conn = await GetOpenedDbConnectionAsync();
+        await _respawner.ResetAsync(conn);
+    }
+
+    private async Task<DbConnection> GetOpenedDbConnectionAsync()
+    {
+        var conn = _databaseFacade.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open)
+            await conn.OpenAsync();
+        return conn;
     }
 
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+        DbConnectionString = _dbContainer.GetConnectionString();
+        
         await _redisContainer.StartAsync();
     }
 
-    public new async Task DisposeAsync()
+    async Task IAsyncLifetime.DisposeAsync()
     {
         await _dbContainer.StopAsync();
+        await _dbContainer.DisposeAsync();
         await _redisContainer.StopAsync();
+        await _redisContainer.DisposeAsync();
     }
 }
