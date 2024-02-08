@@ -309,6 +309,16 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+                            Value = 3,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Value = 2,
+                            Name = "CatalogAdmin"
+                        },
+                        new
+                        {
                             Value = 1,
                             Name = "DefaultUser"
                         });
@@ -323,6 +333,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()

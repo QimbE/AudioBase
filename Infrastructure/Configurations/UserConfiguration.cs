@@ -20,16 +20,20 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
 
         builder.Property(u => u.RoleId).IsRequired();
 
+        builder.Property(u => u.IsVerified).IsRequired();
+
         // One-to-one with refresh token
         builder
             .HasOne(u => u.RefreshToken)
             .WithOne(r => r.Owner)
-            .HasForeignKey<RefreshToken>(r => r.Id);
+            .HasForeignKey<RefreshToken>(r => r.Id)
+            .IsRequired();
 
         // Many-to-one with role
         builder
             .HasOne(u => u.Role)
             .WithMany()
-            .HasForeignKey(u => u.RoleId);
+            .HasForeignKey(u => u.RoleId)
+            .IsRequired();
     }
 }

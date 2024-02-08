@@ -1,4 +1,12 @@
-﻿using MediatR;
+﻿using Application.Authentication;
+using Application.Authentication.Login;
+using Application.Authentication.Logout;
+using Application.Authentication.Refresh;
+using Application.Authentication.Register;
+using Application.Authentication.VerifyEmail;
+using Application.Users.ChangePassword;
+using Application.Users.ChangeRole;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Behaviors;
@@ -23,7 +31,14 @@ internal static class RegisterBehaviors
     private static MediatRServiceConfiguration AddValidationBehaviors(this MediatRServiceConfiguration config)
     {
         // add validation pipeline here here
-        return config;
+        return config
+            .AddValidationBehavior<RegisterCommand, bool>()
+            .AddValidationBehavior<LoginCommand, UserResponse>()
+            .AddValidationBehavior<RefreshCommand, TokenResponse>()
+            .AddValidationBehavior<LogoutCommand, bool>()
+            .AddValidationBehavior<ChangeRoleCommand, bool>()
+            .AddValidationBehavior<ChangePasswordCommand, bool>()
+            .AddValidationBehavior<VerifyEmailCommand, bool>();
     }
     
     /// <summary>

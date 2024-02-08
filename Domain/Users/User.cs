@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
+using Domain.Users.Events;
 using Throw;
 
 namespace Domain.Users;
@@ -29,6 +30,11 @@ public class User
             _email = value.Throw().IfNullOrWhiteSpace(x => x);
         }
     }
+    
+    /// <summary>
+    /// Have user verified his/her email?
+    /// </summary>
+    public bool IsVerified { get; protected set; }
 
     private string _password;
     /// <summary>
@@ -41,7 +47,8 @@ public class User
         protected set
         {
             _password = value.Throw().IfNullOrWhiteSpace(x => x);
-        } }
+        }
+    }
 
     private int _roleId;
     public int RoleId
@@ -63,18 +70,30 @@ public class User
         
     }
 
-    protected User(string name, string email, string password, int roleId)
+    protected User(string name, string email, string password, int roleId, bool isVerified)
         : base(Guid.NewGuid())
     {
         Name = name;
         Email = email;
         Password = password;
         RoleId = roleId;
+        IsVerified = isVerified;
     }
 
-    public static User Create(string name, string email, string password, int roleId)
+    public static User Create(
+        string name,
+        string email,
+        string password,
+        int roleId
+        )
     {
-        return new(name, email, password, roleId);
+        User result = new(name, email, password, roleId, false);
+
+        result.RefreshToken = RefreshToken.Create("sample", result.Id);
+        
+        result.RaiseEvent(new UserCreatedDomainEvent(result.Id));
+        
+        return result;
     }
 
     public void Update(string name, string email, string password, int roleId)
@@ -83,5 +102,18 @@ public class User
         Email = email;
         Password = password;
         RoleId = roleId;
+    }
+
+    /// <summary>
+    /// Sets IsVerified to true
+    /// </summary>
+    public void VerifyEmail()
+    {
+        IsVerified = true;
+    }
+    
+    public void RequestVerification()
+    {
+        RaiseEvent(new UserCreatedDomainEvent(this.Id));
     }
 }

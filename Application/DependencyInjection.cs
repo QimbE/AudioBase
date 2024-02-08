@@ -3,6 +3,7 @@ using Application.ExceptionHandlers;
 using Application.GraphQL;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Application;
 
@@ -14,10 +15,10 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
 
-        services.AddMediatR(configuration =>
+        services.AddMediatR(config =>
         {
-            configuration.RegisterServicesFromAssembly(assembly);
-            configuration.AddPipelineBehaviors();
+            config.RegisterServicesFromAssembly(assembly);
+            config.AddPipelineBehaviors();
         });
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -25,7 +26,11 @@ public static class DependencyInjection
         // GraphQL configuration
         services.AddGraphQLServer()
             .ConfigureHotChocolateTypes()
-            .ConfigurePipeline();
+            .UseAutomaticPersistedQueryPipeline()
+            .AddRedisQueryStorage(
+                s => s.GetRequiredService<IConnectionMultiplexer>().GetDatabase(),
+                TimeSpan.FromMinutes(2)
+                );
         
         return services;
     }

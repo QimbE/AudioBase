@@ -18,6 +18,12 @@ public static class HotChocolateRegistration
             .AddAuthorization();
     }
 
+    /// <summary>
+    /// Configures default pipeline with caching
+    /// </summary>
+    /// <param name="builder">pipeline builder</param>
+    /// <returns></returns>
+    [Obsolete("Obsolete due to unexpected caching behavior. There is a chance to fix it if we somehow manage to deal with hotchocolate pipeline", true)]
     public static IRequestExecutorBuilder ConfigurePipeline(this IRequestExecutorBuilder builder)
     {
         return builder

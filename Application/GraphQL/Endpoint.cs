@@ -13,7 +13,7 @@ public class Endpoint
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    // TODO: [Authorize()]
+    [Authorize(nameof(Role.Admin))]
     public async Task<IQueryable<User>> GetUsers(
         [Service(ServiceKind.Resolver)] IApplicationDbContext context,
         CancellationToken cancellationToken

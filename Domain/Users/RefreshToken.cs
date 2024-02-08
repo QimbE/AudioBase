@@ -58,7 +58,7 @@ public class RefreshToken
     {
         return new(
             value,
-            DateTime.UtcNow.AddDays(LifeTime),
+            DateTime.UtcNow,
             userId
             );
     }
@@ -67,6 +67,11 @@ public class RefreshToken
     {
         Value = value;
         ExpirationDate = DateTime.UtcNow.AddDays(LifeTime);
+    }
+
+    public void MakeExpire()
+    {
+        ExpirationDate = DateTime.UtcNow;
     }
 
     public override string ToString()

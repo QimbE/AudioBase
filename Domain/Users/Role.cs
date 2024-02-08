@@ -9,5 +9,8 @@ public class Role(string name, int value)
     : SmartEnum<Role>(name, value)
 {
     public static Role DefaultUser = new(nameof(DefaultUser), 1);
-    // TODO: add more roles
+
+    public static Role CatalogAdmin = new(nameof(CatalogAdmin), 2);
+
+    public static Role Admin = new(nameof(Admin), 3);
 }

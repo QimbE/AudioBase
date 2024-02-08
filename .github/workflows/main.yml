@@ -30,3 +30,11 @@ jobs:
         
       - name: Test
         run: dotnet test ./AudioBase.sln --configuration Release --no-restore --no-build
+        env:
+          JwtSettings__Issuer: ${{secrets.JWTSETTINGS__ISSUER}}
+          JwtSettings__Audience: ${{secrets.JWTSETTINGS__AUDIENCE}}
+          JwtSettings__Key: ${{secrets.JWTSETTINGS__KEY}}
+          JwtSettings__ExpiryTime: ${{secrets.JWTSETTINGS__EXPIRYTIME}}
+          EmailSettings__From: ${{secrets.EMAILSETTINGS__FROM}}
+          EmailSettings__Password: ${{secrets.EMAILSETTINGS__PASSWORD}}
+          EmailSettings__UserName: ${{secrets.EMAILSETTINGS__USERNAME}}
