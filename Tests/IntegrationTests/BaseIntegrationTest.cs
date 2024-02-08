@@ -25,17 +25,6 @@ public abstract class BaseIntegrationTest: IAsyncLifetime
         Scope = Factory.Services.CreateScope();
     }
 
-    public Task RecreateDatabase()
-    {
-        using var scope = Factory.Services.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
-        
-        return Task.CompletedTask;
-    }
-
     public virtual Task InitializeAsync()
     {
         return Task.CompletedTask;
