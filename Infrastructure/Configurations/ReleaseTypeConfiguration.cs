@@ -8,7 +8,7 @@ public class ReleaseTypeConfiguration : IEntityTypeConfiguration<ReleaseType>
 {
     public void Configure(EntityTypeBuilder<ReleaseType> builder)
     {
-        // Release type is SmartEmum, therefore definition is different
+        // Release type is SmartEnum, therefore definition is different
         builder.HasKey(rt => rt.Value);
 
         builder.Property(rt => rt.Value).HasColumnName("Id");
