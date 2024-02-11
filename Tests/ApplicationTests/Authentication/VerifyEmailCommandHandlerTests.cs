@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace ApplicationTests.Authentication;
 
-public class VerifyEmailCommandHandlerTests: AuthTestingBase
+public class VerifyEmailCommandHandlerTests: AuthTestingBase<VerifyEmailCommandHandlerTests>
 {
     private readonly User _defaultUser = User.Create(
         "Test",
@@ -17,11 +17,6 @@ public class VerifyEmailCommandHandlerTests: AuthTestingBase
         "123123",
         Role.List.First()
     );
-    
-    public VerifyEmailCommandHandlerTests()
-        : base(typeof(VerifyEmailCommandHandlerTests))
-    {
-    }
 
     [Fact]
     public void VerifyEmail_Should_ReturnUnauthorizedAccessException_OnInvalidToken()

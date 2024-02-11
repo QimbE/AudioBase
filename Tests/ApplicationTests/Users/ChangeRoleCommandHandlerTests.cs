@@ -7,14 +7,8 @@ using FluentAssertions;
 namespace ApplicationTests.Users;
 
 public class ChangeRoleCommandHandlerTests
-    : AuthTestingBase
+    : AuthTestingBase<ChangeRoleCommandHandlerTests>
 {
-    public ChangeRoleCommandHandlerTests()
-        : base(typeof(ChangeRoleCommandHandlerTests))
-    {
-        
-    }
-
     [Fact]
     public void ChangeRole_Should_ReturnException_OnInvalidId()
     {

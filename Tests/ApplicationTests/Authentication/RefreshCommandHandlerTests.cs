@@ -5,14 +5,8 @@ using FluentAssertions;
 
 namespace ApplicationTests.Authentication;
 
-public class RefreshCommandHandlerTests: AuthTestingBase
+public class RefreshCommandHandlerTests: AuthTestingBase<RefreshCommandHandlerTests>
 {
-    public RefreshCommandHandlerTests()
-        : base(typeof(RefreshCommandHandlerTests))
-    {
-        
-    }
-    
     public static IEnumerable<object[]> InvalidUsersAndTokens()
     {
         var user1 = User.Create("123", "test", "123123", 1);

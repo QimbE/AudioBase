@@ -6,14 +6,8 @@ using FluentAssertions;
 
 namespace ApplicationTests.Authentication;
 
-public class LogoutCommandHandlerTests: AuthTestingBase
+public class LogoutCommandHandlerTests: AuthTestingBase<LogoutCommandHandlerTests>
 {
-    public LogoutCommandHandlerTests()
-        : base(typeof(LogoutCommandHandlerTests))
-    {
-        
-    }
-    
     public static IEnumerable<object[]> InvalidUsersAndTokens()
     {
         var user1 = User.Create("123", "test", "123123", 1);
