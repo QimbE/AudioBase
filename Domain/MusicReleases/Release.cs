@@ -1,5 +1,6 @@
 using System.Dynamic;
 using Domain.Abstractions;
+using Domain.Artists;
 using Throw;
 
 namespace Domain.MusicReleases;
@@ -72,7 +73,7 @@ public class Release
         {
             _releaseDate = value.Throw()
                 .IfNotType<DateOnly>()
-                .IfNull(rd => rd);
+                .IfDefault(rd => rd);
         }
     }
     
