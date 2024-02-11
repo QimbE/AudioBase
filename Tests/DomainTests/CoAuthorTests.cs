@@ -11,7 +11,7 @@ public class CoAuthorTests
         // Arrange
         
         // Act
-        var action = () => CoAuthor.Create(new Guid(), new Guid());
+        var action = () => CoAuthor.Create(Guid.NewGuid(), Guid.NewGuid());
         // Assert
         action.Should().NotThrow();
     }

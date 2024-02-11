@@ -54,7 +54,6 @@ public class Track
         protected set
         {
             _duration = value.Throw()
-                .IfNotType<TimeSpan>()
                 .IfDefault(d => d);
         }
     }

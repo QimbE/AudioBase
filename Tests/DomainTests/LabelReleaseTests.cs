@@ -11,7 +11,7 @@ public class LabelReleaseTests
         // Arrange
         
         // Act
-        var action = () => LabelRelease.Create(new Guid(), new Guid());
+        var action = () => LabelRelease.Create(Guid.NewGuid(), Guid.NewGuid());
         // Assert
         action.Should().NotThrow();
     }

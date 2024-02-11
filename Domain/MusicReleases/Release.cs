@@ -73,7 +73,6 @@ public class Release
         protected set
         {
             _releaseDate = value.Throw()
-                .IfNotType<DateOnly>()
                 .IfDefault(rd => rd);
         }
     }
@@ -83,6 +82,8 @@ public class Release
     public ReleaseType ReleaseType { get; protected set; }
 
     public List<LabelRelease> LabelReleases { get; protected set; }
+    
+    public List<Track> Tracks { get; protected set; }
     
     protected Release()
     {

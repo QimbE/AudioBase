@@ -13,7 +13,7 @@ public class TrackTests
         // Arrange
         
         // Act
-        var action = () => Track.Create(value, "https://youtu.be/dQw4w9WgXcQ", new TimeSpan(0,0,5,32), new Guid(), new Guid());
+        var action = () => Track.Create(value, "https://youtu.be/dQw4w9WgXcQ", new TimeSpan(0,0,5,32), Guid.NewGuid(), Guid.NewGuid());
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -26,7 +26,7 @@ public class TrackTests
         // Arrange
         
         // Act
-        var action = () => Track.Create("Name", value, new TimeSpan(0,0,5,32), new Guid(), new Guid());
+        var action = () => Track.Create("Name", value, new TimeSpan(0,0,5,32), Guid.NewGuid(), Guid.NewGuid());
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -37,7 +37,7 @@ public class TrackTests
         // Arrange
         
         // Act
-        var action = () => Track.Create("Name", "https://youtu.be/dQw4w9WgXcQ", new TimeSpan(), new Guid(), new Guid());
+        var action = () => Track.Create("Name", "https://youtu.be/dQw4w9WgXcQ", new TimeSpan(), Guid.NewGuid(), Guid.NewGuid());
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -46,9 +46,9 @@ public class TrackTests
     public void Update_ShouldNotThrowException_OnValidInput()
     {
         // Arrange
-        Guid rGuid = new Guid();
-        Guid gGuid = new Guid();
-        var track = Track.Create("Name","https://youtu.be/dQw4w9WgXcQ", new TimeSpan(0,0,5,30), new Guid(), new Guid());
+        Guid rGuid = Guid.NewGuid();
+        Guid gGuid = Guid.NewGuid();
+        var track = Track.Create("Name","https://youtu.be/dQw4w9WgXcQ", new TimeSpan(0,0,5,30), Guid.NewGuid(), Guid.NewGuid());
         var expResult = Track.Create("NewName","http://youtu.be/dQw4w9WgXcQ", new TimeSpan(0,1,5,30), rGuid, gGuid);
         // Act
         var action = () => track.Update("NewName","http://youtu.be/dQw4w9WgXcQ", new TimeSpan(0,1,5,30), rGuid, gGuid);

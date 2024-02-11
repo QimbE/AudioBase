@@ -14,7 +14,7 @@ public class ReleaseTests
         
         // Act
         var action = () => 
-            Release.Create(value, "https://youtu.be/dQw4w9WgXcQ", new Guid(), 1, new DateOnly(2002,2,2));
+            Release.Create(value, "https://youtu.be/dQw4w9WgXcQ", Guid.NewGuid(), 1, new DateOnly(2002,2,2));
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -28,7 +28,7 @@ public class ReleaseTests
         
         // Act
         var action = () => 
-            Release.Create("name", value, new Guid(), 1, new DateOnly(2002,2,2));
+            Release.Create("name", value, Guid.NewGuid(), 1, new DateOnly(2002,2,2));
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -42,7 +42,7 @@ public class ReleaseTests
         
         // Act
         var action = () => 
-            Release.Create("Name", "https://youtu.be/dQw4w9WgXcQ", new Guid(), 1, new DateOnly());
+            Release.Create("Name", "https://youtu.be/dQw4w9WgXcQ", Guid.NewGuid(), 1, new DateOnly());
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -54,7 +54,7 @@ public class ReleaseTests
         
         // Act
         var action = () => 
-            Release.Create("Name", "https://youtu.be/dQw4w9WgXcQ", new Guid(), -100, new DateOnly(2002,2,2));
+            Release.Create("Name", "https://youtu.be/dQw4w9WgXcQ", Guid.NewGuid(), -100, new DateOnly(2002,2,2));
         // Assert
         action.Should().Throw<ArgumentException>();
     }
@@ -63,8 +63,8 @@ public class ReleaseTests
     public void Update_ShouldNotThrowException_OnValidInput()
     {
         // Arrange
-        Guid resGuid = new Guid();
-        var release = Release.Create("Name","https://youtu.be/dQw4w9WgXcQ", new Guid(), 1, new DateOnly(2002,2,2));
+        Guid resGuid = Guid.NewGuid();
+        var release = Release.Create("Name","https://youtu.be/dQw4w9WgXcQ", Guid.NewGuid(), 1, new DateOnly(2002,2,2));
         var expResult = Release.Create("NewName","http://youtu.be/dQw4w9WgXcQ", resGuid, 2, new DateOnly(2003,3,3));
         // Act
         var action = () => release.Update("NewName","http://youtu.be/dQw4w9WgXcQ", resGuid, 2, new DateOnly(2003,3,3));
