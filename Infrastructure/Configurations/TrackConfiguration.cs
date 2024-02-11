@@ -27,7 +27,7 @@ public class TrackConfiguration: IEntityTypeConfiguration<Track>
             .IsRequired();
         
         builder.HasOne<Release>()
-            .WithMany()
+            .WithMany(r=> r.Tracks)
             .HasForeignKey(t => t.ReleaseId)
             .IsRequired();
     }
