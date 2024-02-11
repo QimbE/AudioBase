@@ -55,7 +55,7 @@ public class Track
         {
             _duration = value.Throw()
                 .IfNotType<TimeSpan>()
-                .IfNull(d => d);
+                .IfDefault(d => d);
         }
     }
     
