@@ -1,4 +1,5 @@
 using Domain.Abstractions;
+using Domain.Junctions;
 using Throw;
 
 namespace Domain.Labels;
@@ -40,6 +41,8 @@ public class Label
         get => _photoLink;
         protected set => _photoLink = value.Throw().IfNullOrWhiteSpace(pl => pl);
     }
+
+    public List<LabelRelease> LabelReleases { get; protected set; }
 
     protected Label()
     {

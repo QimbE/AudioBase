@@ -1,4 +1,7 @@
 using Domain.Abstractions;
+using Domain.Artists;
+using Domain.Junctions;
+using Domain.MusicReleases;
 using Throw;
 
 namespace Domain.Tracks;
@@ -74,6 +77,18 @@ public class Track
         protected set => 
             _genreId = value.Throw()
                 .IfNull(gi => gi);
+    }
+    
+    public Genre Genre { get; protected set; }
+    
+    public Release Release { get; protected set; }
+    
+    public List<CoAuthor> CoAuthors { get; protected set; }
+    
+    public Artist Author
+    {
+        get => Release.Author;
+        protected set => Author = value;
     }
     
     protected Track()

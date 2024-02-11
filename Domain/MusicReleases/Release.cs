@@ -1,6 +1,9 @@
 using System.Dynamic;
 using Domain.Abstractions;
 using Domain.Artists;
+using Domain.Junctions;
+using Domain.Labels;
+using Domain.Tracks;
 using Throw;
 
 namespace Domain.MusicReleases;
@@ -16,8 +19,6 @@ namespace Domain.MusicReleases;
 public class Release
     : Entity<Release>
 {
-    public ReleaseType ReleaseType { get; protected set; }
-    
     private string _name;
 
     public string Name
@@ -76,6 +77,12 @@ public class Release
                 .IfDefault(rd => rd);
         }
     }
+    
+    public Artist Author { get; protected set; }
+    
+    public ReleaseType ReleaseType { get; protected set; }
+
+    public List<LabelRelease> LabelReleases { get; protected set; }
     
     protected Release()
     {

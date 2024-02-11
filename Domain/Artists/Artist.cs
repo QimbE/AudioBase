@@ -1,4 +1,5 @@
 using Domain.Abstractions;
+using Domain.MusicReleases;
 using Throw;
 
 namespace Domain.Artists;
@@ -40,6 +41,8 @@ public class Artist
         get => _photoLink;
         protected set => _photoLink = value.Throw().IfNullOrWhiteSpace(pl => pl);
     }
+    
+    public List<Release> Releases { get; set; }
     
     protected Artist()
     {

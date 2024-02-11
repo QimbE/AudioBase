@@ -20,6 +20,8 @@ public class Genre
             _name = value.Throw().IfNullOrWhiteSpace(x => x);
         }
     }
+    
+    public List<Track> Tracks { get; protected set; }
 
     protected Genre()
     {
