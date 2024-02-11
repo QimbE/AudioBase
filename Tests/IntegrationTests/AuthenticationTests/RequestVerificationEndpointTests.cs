@@ -51,7 +51,6 @@ public class RequestVerificationEndpointTests: BaseIntegrationTest
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        await RecreateDatabase();
     }
     
     [Fact]
@@ -78,7 +77,5 @@ public class RequestVerificationEndpointTests: BaseIntegrationTest
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
-        await RecreateDatabase();
     }
 }
