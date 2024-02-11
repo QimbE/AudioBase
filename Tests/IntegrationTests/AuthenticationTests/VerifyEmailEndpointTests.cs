@@ -28,17 +28,12 @@ public class VerifyEmailEndpointTests: BaseIntegrationTest
     public async Task VerifyEmail_Should_ReturnUnauthorized_OnInvalidToken()
     {
         // Arrange
-        await RecreateDatabase();
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var token = await jwtProvider.GenerateAccessToken(_defaultUser)+"123";
         
         // Act
-        var response = await httpClient.GetAsync($"{nameof(Authentication)}/VerifyEmail?token={token}");
+        var response = await HttpClient.GetAsync($"{nameof(Authentication)}/VerifyEmail?token={token}");
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -48,17 +43,12 @@ public class VerifyEmailEndpointTests: BaseIntegrationTest
     public async Task VerifyEmail_Should_ReturnNotFound_OnNonexistentUser()
     {
         // Arrange
-        await RecreateDatabase();
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-        
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var token = await jwtProvider.GenerateVerificationToken(_defaultUser);
         
         // Act
-        var response = await httpClient.GetAsync($"{nameof(Authentication)}/VerifyEmail?token={token}");
+        var response = await HttpClient.GetAsync($"{nameof(Authentication)}/VerifyEmail?token={token}");
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -68,22 +58,18 @@ public class VerifyEmailEndpointTests: BaseIntegrationTest
     public async Task VerifyEmail_Should_ReturnOk_OnValidRequest()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(_defaultUser);
 
         await context.SaveChangesAsync();
         
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var token = await jwtProvider.GenerateVerificationToken(_defaultUser);
         
         // Act
-        var response = await httpClient.GetAsync($"{nameof(Authentication)}/VerifyEmail?token={token}");
+        var response = await HttpClient.GetAsync($"{nameof(Authentication)}/VerifyEmail?token={token}");
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

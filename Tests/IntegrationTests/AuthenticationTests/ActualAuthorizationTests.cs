@@ -28,22 +28,18 @@ public class ActualAuthorizationTests: BaseIntegrationTest
     public async Task ChangeRoleEndpoint_Should_Return_Forbidden_OnNotAllowedUser(Role notAllowedRole)
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
-        using var scope = Factory.Services.CreateScope();
-
-        var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var user = User.Create("Bim", "Bombom", "123123123", notAllowedRole);
 
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
-        httpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
 
         var request = new ChangeRoleCommand(user.Id, "Admin");
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangeRole", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangeRole", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -53,12 +49,10 @@ public class ActualAuthorizationTests: BaseIntegrationTest
     public async Task ChangeRoleEndpoint_Should_Return_Unauthorized_OnUnauthenticatedUser()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-
         var request = new ChangeRoleCommand(Guid.NewGuid(), "Admin");
         
         // Act
-        var response = await httpClient.PatchAsJsonAsync("User/ChangeRole", request);
+        var response = await HttpClient.PatchAsJsonAsync("User/ChangeRole", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

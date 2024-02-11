@@ -8,7 +8,9 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.HasKey(r => r.Value).HasName("Id");
+        builder.HasKey(r => r.Value);
+        
+        builder.Property(r => r.Value).HasColumnName("Id");
 
         builder.HasIndex(r => r.Name).IsUnique();
 

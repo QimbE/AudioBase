@@ -19,11 +19,8 @@ public class RefreshEndpointTests: BaseIntegrationTest
     [Fact]
     public async Task Refresh_Should_ReturnUnauthorized_IfThereIsNoRefreshToken()
     {
-        // Arrange
-        var httpClient = Factory.CreateClient();
-
         // Act
-        var response = await httpClient.PutAsync("Authentication/Refresh", null);
+        var response = await HttpClient.PutAsync("Authentication/Refresh", null);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -33,38 +30,29 @@ public class RefreshEndpointTests: BaseIntegrationTest
     public async Task Refresh_Should_ReturnBadRequest_IfRefreshTokenIsInvalid()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-
         var fakeToken = "bimbimbimbambambam";
         
         var user = User.Create("bimbim", "bambam", "123123", Role.DefaultUser);
         
-        httpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={fakeToken}"]);
-
-        using var scope = Factory.Services.CreateScope();
+        HttpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={fakeToken}"]);
         
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
         await context.SaveChangesAsync();
         
         // Act
-        var response = await httpClient.PutAsync("Authentication/Refresh", null);
+        var response = await HttpClient.PutAsync("Authentication/Refresh", null);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-        await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
     }
     
     [Fact]
     public async Task Refresh_Should_ReturnTokenResponse_IfRefreshTokenValid()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-        
         var user = User.Create("bimbim", "bambam", "123123", Role.DefaultUser);
 
         user.RefreshToken.Update("123123123");
@@ -72,18 +60,16 @@ public class RefreshEndpointTests: BaseIntegrationTest
         
         var actualToken = user.RefreshToken.Value;
         
-        httpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={actualToken}"]);
-
-        using var scope = Factory.Services.CreateScope();
+        HttpClient.DefaultRequestHeaders.Add("cookie", [$"refreshToken={actualToken}"]);
         
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
         await context.SaveChangesAsync();
         
         // Act
-        var response = await httpClient.PutAsync("Authentication/Refresh", null);
+        var response = await HttpClient.PutAsync("Authentication/Refresh", null);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -97,8 +83,5 @@ public class RefreshEndpointTests: BaseIntegrationTest
         var content = responseWrapper.Data;
 
         content.AccessToken.Should().NotBeNull();
-        
-        await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
     }
 }

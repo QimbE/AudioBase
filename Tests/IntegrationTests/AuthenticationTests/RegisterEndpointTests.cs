@@ -25,14 +25,12 @@ public class RegisterEndpointTests: BaseIntegrationTest
         )
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-
         var request = new RegisterCommand(name, email, password);
 
         var validationResult = await new RegisterCommandValidator().ValidateAsync(request);
         
         // Act
-        var response = await httpClient.PostAsJsonAsync("Authentication/Register", request);
+        var response = await HttpClient.PostAsJsonAsync("Authentication/Register", request);
         
         // Assert
         if (!validationResult.IsValid)
@@ -48,13 +46,11 @@ public class RegisterEndpointTests: BaseIntegrationTest
     public async Task RegisterEndpoint_ShouldReturn_ConflictResponseOnDuplicateRegistration()
     {
         // Arrange
-        var httpClient = Factory.CreateClient();
-
         var request = new RegisterCommand("Boban123", "123@123.ru", "12345678");
         
         // Act
-        await httpClient.PostAsJsonAsync("Authentication/Register", request);
-        var response = await httpClient.PostAsJsonAsync("Authentication/Register", request);
+        await HttpClient.PostAsJsonAsync("Authentication/Register", request);
+        var response = await HttpClient.PostAsJsonAsync("Authentication/Register", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);

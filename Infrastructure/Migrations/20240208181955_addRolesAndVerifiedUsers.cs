@@ -7,14 +7,21 @@
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class addMoreRoles : Migration
+    public partial class addRolesAndVerifiedUsers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<bool>(
+                name: "IsVerified",
+                table: "Users",
+                type: "boolean",
+                nullable: false,
+                defaultValue: false);
+
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "Value", "Name" },
+                columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
                     { 2, "CatalogAdmin" },
@@ -27,13 +34,17 @@ namespace Infrastructure.Migrations
         {
             migrationBuilder.DeleteData(
                 table: "Roles",
-                keyColumn: "Value",
+                keyColumn: "Id",
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
                 table: "Roles",
-                keyColumn: "Value",
+                keyColumn: "Id",
                 keyValue: 3);
+
+            migrationBuilder.DropColumn(
+                name: "IsVerified",
+                table: "Users");
         }
     }
 }
