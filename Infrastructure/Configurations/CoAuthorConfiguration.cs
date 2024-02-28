@@ -16,13 +16,13 @@ public class CoAuthorConfiguration: IEntityTypeConfiguration<CoAuthor>
 
         builder.Property(lr => lr.CoAuthorId).IsRequired();
         
-        builder.HasOne<Artist>()
+        builder.HasOne<Artist>(ca=> ca.Artist)
             .WithMany()
             .HasForeignKey(lr => lr.CoAuthorId)
             .IsRequired();
         
-        builder.HasOne<Track>()
-            .WithMany()
+        builder.HasOne<Track>(ca=>ca.Track)
+            .WithMany(t=>t.CoAuthors)
             .HasForeignKey(lr => lr.TrackId)
             .IsRequired();
     }

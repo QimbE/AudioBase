@@ -1,4 +1,6 @@
 using Domain.Abstractions;
+using Domain.Artists;
+using Domain.Tracks;
 using Throw;
 
 namespace Domain.Junctions;
@@ -30,6 +32,10 @@ public class CoAuthor
             _coAuthorId = value.Throw()
                 .IfNull(cai => cai);
     }
+
+    public Artist Artist { get; set; }
+    
+    public Track Track { get; set; }
     
     protected CoAuthor()
     {
