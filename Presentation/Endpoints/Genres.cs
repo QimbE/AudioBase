@@ -1,4 +1,5 @@
 using Application.Genres.CreateGenre;
+using Application.Genres.RenameGenre;
 using Carter;
 using Domain.Users;
 using Infrastructure.Authentication.Extensions;
@@ -23,11 +24,12 @@ public class Genres: ICarterModule
         
         group.MapPost(
             "CreateGenre",
-            async (HttpContext context, [FromBody] CreateGenreCommand request, ISender sender, CancellationToken cancellationToken) =>
+            async ([FromBody] CreateGenreCommand request, ISender sender, 
+                CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(request, cancellationToken);
 
-                return await result.MapToResponse(context, cancellationToken);
+                return await result.MapToResponse(cancellationToken);
             })
             .UserShouldBeAtLeast(Role.CatalogAdmin)
             .Produces<Ok<BaseResponse>>()
@@ -35,5 +37,21 @@ public class Genres: ICarterModule
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Creates a new genre");
+        
+        group.MapPatch(
+            "RenameGenre",
+            async ([FromBody] RenameGenreCommand request, ISender sender,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(request, cancellationToken);
+
+                return await result.MapToResponse(cancellationToken);
+            })
+            .UserShouldBeAtLeast(Role.CatalogAdmin)
+            .Produces<Ok<BaseResponse>>()
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<Conflict>(StatusCodes.Status409Conflict)
+            .WithSummary("Sets new name to existing genre");
     }
 }

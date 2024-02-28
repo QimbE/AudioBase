@@ -5,6 +5,7 @@ using Application.Authentication.Refresh;
 using Application.Authentication.Register;
 using Application.Authentication.VerifyEmail;
 using Application.Genres.CreateGenre;
+using Application.Genres.RenameGenre;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
 using MediatR;
@@ -40,7 +41,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<ChangeRoleCommand, bool>()
             .AddValidationBehavior<ChangePasswordCommand, bool>()
             .AddValidationBehavior<VerifyEmailCommand, bool>()
-            .AddValidationBehavior<CreateGenreCommand, bool>();
+            .AddValidationBehavior<CreateGenreCommand, bool>()
+            .AddValidationBehavior<RenameGenreCommand, bool>();
     }
     
     /// <summary>
