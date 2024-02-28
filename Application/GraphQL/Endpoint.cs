@@ -27,7 +27,7 @@ public class Endpoint
     [UseProjection]
     [UseFiltering]
     [UseSorting]
-    //[Authorize(nameof(Role.DefaultUser))]
+    [Authorize(nameof(Role.DefaultUser))]
     public async Task<IQueryable<Genre>> GetGenres(
         [Service(ServiceKind.Resolver)] IApplicationDbContext context,
         CancellationToken cancellationToken
