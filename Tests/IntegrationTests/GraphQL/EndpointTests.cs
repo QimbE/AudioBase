@@ -17,7 +17,7 @@ public class EndpointTests: BaseIntegrationTest
         
     }
 
-    private const string Query = """
+    private const string userQuery = """
                                  query Rofls {
                                    users {
                                      totalCount
@@ -39,12 +39,22 @@ public class EndpointTests: BaseIntegrationTest
                                    }
                                  }
                                  """;
+    private const string genreQuery = """
+                                     query {
+                                         genres{
+                                             nodes{
+                                                 id
+                                                 name
+                                             }
+                                         }
+                                     }
+                                     """;
     
     [Fact]
     public async Task UserEndpoint_Should_ReturnUnauthorized_OnNotAdmin()
     {
         // Act
-        var res = await HttpClient.GetAsync($"graphql?query={Query}");
+        var res = await HttpClient.GetAsync($"graphql?query={userQuery}");
         
         // Assert
         var content = await res.Content.ReadAsStringAsync();
@@ -84,11 +94,50 @@ public class EndpointTests: BaseIntegrationTest
       HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {responseWrapper!.Data.AccessToken}"]);
       
       // Act
-      var res = await HttpClient.GetAsync($"graphql?query={Query}");
+      var res = await HttpClient.GetAsync($"graphql?query={userQuery}");
       
       // Assert
       var content = await res.Content.ReadAsStringAsync();
 
       content.Should().StartWithEquivalentOf("""{"data":{"users":{"totalCount":1""");
+    }
+    
+    [Fact]
+    public async Task ContentAdminEndpoint_Should_ReturnValidResponse_OnDefaultUser()
+    {
+        // Arrange
+        var name = "bimbimbam";
+        var email = "bam123bim@bam.ru";
+        var password = "bimbimbimBamBamBam";
+      
+        var registerRequest = new RegisterCommand(name, email, password);
+      
+        var loginRequest = new LoginCommand(email, password);
+      
+        await HttpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+
+        using var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var user = context.Users.SingleOrDefault(u => u.Email == registerRequest.Email);
+      
+        user!.VerifyEmail();
+        
+        user!.Update(user.Name, user.Email, user.Password, Role.DefaultUser);
+
+        await context.SaveChangesAsync();
+
+        var loginRes = await HttpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+      
+        var responseWrapper = await loginRes.Content.ReadFromJsonAsync<ResponseWithData<UserResponseDto>>();
+      
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {responseWrapper!.Data.AccessToken}"]);
+        
+        // Act
+        var res = await HttpClient.GetAsync($"graphql?query={genreQuery}");
+        
+        // Assert
+        var content = await res.Content.ReadAsStringAsync();
+
+        content.Should().StartWithEquivalentOf("""{"data":{"genres":{"nodes":""");
     }
 }
