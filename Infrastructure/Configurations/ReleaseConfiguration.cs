@@ -21,8 +21,8 @@ public class ReleaseConfiguration : IEntityTypeConfiguration<Release>
         
         builder.Property(r => r.ReleaseDate).IsRequired();
         
-        builder.HasOne<Artist>()
-            .WithMany()
+        builder.HasOne<Artist>(r=> r.Author)
+            .WithMany(a=> a.Releases)
             .HasForeignKey(r => r.AuthorId)
             .IsRequired();
         
