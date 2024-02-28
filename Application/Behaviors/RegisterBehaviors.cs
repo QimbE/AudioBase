@@ -5,6 +5,7 @@ using Application.Authentication.Refresh;
 using Application.Authentication.Register;
 using Application.Authentication.RequestVerification;
 using Application.Authentication.VerifyEmail;
+using Application.Genres.CreateGenre;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
 using MediatR;
@@ -31,7 +32,7 @@ internal static class RegisterBehaviors
     /// <returns></returns>
     private static MediatRServiceConfiguration AddValidationBehaviors(this MediatRServiceConfiguration config)
     {
-        // add validation pipeline here here
+        // add validation pipeline here
         return config
             .AddValidationBehavior<RegisterCommand, bool>()
             .AddValidationBehavior<LoginCommand, UserResponse>()
@@ -40,7 +41,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<ChangeRoleCommand, bool>()
             .AddValidationBehavior<ChangePasswordCommand, bool>()
             .AddValidationBehavior<VerifyEmailCommand, bool>()
-            .AddValidationBehavior<RequestVerificationQuery, bool>();
+            .AddValidationBehavior<RequestVerificationQuery, bool>()
+            .AddValidationBehavior<CreateGenreCommand, bool>();
     }
     
     /// <summary>
