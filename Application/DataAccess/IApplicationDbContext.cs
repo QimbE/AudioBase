@@ -1,4 +1,5 @@
-﻿using Domain.Users;
+﻿using Domain.Tracks;
+using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.DataAccess;
@@ -6,6 +7,8 @@ namespace Application.DataAccess;
 public interface IApplicationDbContext
 {
     DbSet<User> Users { get; set; }
+    
+    DbSet<Genre> Genres { get; }
     
     DbSet<Role> Roles { get; set; }
     

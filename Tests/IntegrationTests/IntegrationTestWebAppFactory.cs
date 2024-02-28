@@ -106,7 +106,7 @@ public class IntegrationTestWebAppFactory
         _respawner = await Respawner.CreateAsync(conn, new RespawnerOptions
         {
             SchemasToInclude = ["public"],
-            TablesToIgnore = ["__EFMigrationsHistory", "Roles"],
+            TablesToIgnore = ["__EFMigrationsHistory", "Roles", "ReleaseTypes"],
             DbAdapter = DbAdapter.Postgres,
             WithReseed = true
         });

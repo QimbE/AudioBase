@@ -1,4 +1,5 @@
 ﻿using Application.DataAccess;
+using Domain.Tracks;
 using Domain.Users;
 using HotChocolate;
 using HotChocolate.Authorization;
@@ -20,5 +21,18 @@ public class Endpoint
         )
     {
         return context.Users;
+    }
+    
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    //[Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Genre>> GetGenres(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        return context.Genres;
     }
 }

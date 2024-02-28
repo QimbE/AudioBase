@@ -1,4 +1,5 @@
 ﻿using Application.GraphQL.TypeConfigurations;
+using Domain.MusicReleases;
 using HotChocolate.Execution.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,7 @@ public static class HotChocolateRegistration
             .AddQueryType<Endpoint>()
             .AddType<RoleType>()
             .AddType<UserType>()
+            .AddType<ReleaseType>()
             .AddProjections()
             .AddSorting()
             .AddFiltering()
