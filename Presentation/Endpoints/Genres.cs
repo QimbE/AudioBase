@@ -33,12 +33,12 @@ public class Genres: ICarterModule
             })
             .UserShouldBeAtLeast(Role.CatalogAdmin)
             .Produces<Ok<BaseResponse>>()
-            .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Creates a new genre");
         
-        group.MapPatch(
+        group.MapPut(
             "RenameGenre",
             async ([FromBody] RenameGenreCommand request, ISender sender,
                 CancellationToken cancellationToken) =>
@@ -49,8 +49,9 @@ public class Genres: ICarterModule
             })
             .UserShouldBeAtLeast(Role.CatalogAdmin)
             .Produces<Ok<BaseResponse>>()
-            .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Sets new name to existing genre");
     }
