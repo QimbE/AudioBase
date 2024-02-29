@@ -4,18 +4,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationTests;
 
-public abstract class CatalogTestingBase
+public abstract class CatalogTestingBase<T> 
+    where T : CatalogTestingBase<T>
 {
     protected readonly TestDbContext Context;
     
     protected static InsertOutboxMessageInterceptor Interceptor = new();
     
-    public CatalogTestingBase(Type toTakeName)
+    public CatalogTestingBase()
     {
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         builder
             .AddInterceptors(Interceptor)
-            .UseInMemoryDatabase(toTakeName.Name);
+            .UseInMemoryDatabase(typeof(T).Name);
 
         Context = new TestDbContext(builder.Options);
     }

@@ -5,12 +5,8 @@ using FluentAssertions;
 
 namespace ApplicationTests.Genres;
 
-public class GenreCreateCommandHandlerTests : CatalogTestingBase
+public class GenreCreateCommandHandlerTests : CatalogTestingBase<GenreCreateCommandHandlerTests>
 {
-    public GenreCreateCommandHandlerTests() : base(typeof(GenreCreateCommandHandlerTests))
-    {
-    }
-
     [Fact]
     public void CreateGenre_Should_ReturnException_OnDuplicateName()
     {

@@ -7,12 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationTests.Genres;
 
-public class GenreRenameCommandHandlerTests:  CatalogTestingBase
+public class GenreRenameCommandHandlerTests:  CatalogTestingBase<GenreRenameCommandHandlerTests>
 {
-    public GenreRenameCommandHandlerTests() : base(typeof(GenreRenameCommandHandlerTests))
-    {
-    }
-    
     [Fact]
     public void RenameGenre_Should_ReturnException_OnDuplicateName()
     {

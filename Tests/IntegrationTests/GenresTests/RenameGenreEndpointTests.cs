@@ -42,13 +42,13 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
 
         await context.SaveChangesAsync();
 
-        var g = context.Genres.SingleOrDefaultAsync(g => g.Name == createName);
+        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(g.Result.Id ,genreName);
+        var request = new RenameGenreCommand(genreByName.Id ,genreName);
         
         // Act
         var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
@@ -77,13 +77,13 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
 
         await context.SaveChangesAsync();
 
-        var g = context.Genres.SingleOrDefaultAsync(g => g.Name == createName);
+        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(g.Result.Id ,newName);
+        var request = new RenameGenreCommand(genreByName.Id ,newName);
         
         // Act
         var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
@@ -145,13 +145,13 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
 
         await context.SaveChangesAsync();
 
-        var g = context.Genres.SingleOrDefaultAsync(g => g.Name == createName);
+        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(g.Result.Id ,newName);
+        var request = new RenameGenreCommand(genreByName.Id ,newName);
         
         // Act
         var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
@@ -180,13 +180,13 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
 
         await context.SaveChangesAsync();
 
-        var g = context.Genres.SingleOrDefaultAsync(g => g.Name == createName);
+        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(g.Result.Id ,newName);
+        var request = new RenameGenreCommand(genreByName.Id ,newName);
         
         // Act
         var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
