@@ -22,10 +22,10 @@ public class GenreRenameCommandHandlerTests:  CatalogTestingBase<GenreRenameComm
 
         Context.SaveChanges();
         
-        var g = Context.Genres.SingleOrDefaultAsync(g => g.Name == createName);
+        var genreByName = Context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         // Act
-        var request = new RenameGenreCommand(g.Result.Id,updateName);
+        var request = new RenameGenreCommand(genreByName.Id,updateName);
 
         var handler = new RenameGenreCommandHandler(Context);
         
@@ -86,10 +86,10 @@ public class GenreRenameCommandHandlerTests:  CatalogTestingBase<GenreRenameComm
 
         Context.SaveChanges();
         
-        var g = Context.Genres.SingleOrDefaultAsync(g => g.Name == createName);
+        var genreByName = Context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         // Act
-        var request = new RenameGenreCommand(g.Result.Id, updateName);
+        var request = new RenameGenreCommand(genreByName.Id, updateName);
 
         var handler = new RenameGenreCommandHandler(Context);
         
