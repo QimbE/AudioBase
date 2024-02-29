@@ -21,12 +21,12 @@ public class TrackConfiguration: IEntityTypeConfiguration<Track>
         
         builder.Property(t => t.GenreId).IsRequired();
 
-        builder.HasOne<Genre>()
-            .WithMany()
+        builder.HasOne<Genre>(t=> t.Genre)
+            .WithMany(g=> g.Tracks)
             .HasForeignKey(t => t.GenreId)
             .IsRequired();
         
-        builder.HasOne<Release>()
+        builder.HasOne<Release>(t=> t.Release)
             .WithMany(r=> r.Tracks)
             .HasForeignKey(t => t.ReleaseId)
             .IsRequired();

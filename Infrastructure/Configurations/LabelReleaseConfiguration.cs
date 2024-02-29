@@ -16,13 +16,13 @@ public class LabelReleaseConfiguration: IEntityTypeConfiguration<LabelRelease>
 
         builder.Property(lr => lr.ReleaseId).IsRequired();
         
-        builder.HasOne<Label>()
-            .WithMany()
+        builder.HasOne<Label>(lr=>lr.Label)
+            .WithMany(l=>l.LabelReleases)
             .HasForeignKey(lr => lr.LabelId)
             .IsRequired();
         
-        builder.HasOne<Release>()
-            .WithMany()
+        builder.HasOne<Release>(lr=>lr.Release)
+            .WithMany(r=>r.LabelReleases)
             .HasForeignKey(lr => lr.ReleaseId)
             .IsRequired();
     }

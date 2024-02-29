@@ -1,4 +1,6 @@
 using Domain.Abstractions;
+using Domain.Labels;
+using Domain.MusicReleases;
 using Throw;
 
 namespace Domain.Junctions;
@@ -30,6 +32,10 @@ public class LabelRelease
             _releaseId = value.Throw()
                 .IfNull(ri => ri);
     }
+
+    public Label Label { get; set; }
+    
+    public Release Release { get; set; }
     
     protected LabelRelease()
     {
