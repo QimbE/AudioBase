@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
+using Application.Users.ForgotPassword;
 using Carter;
 using Domain.Users;
 using Infrastructure.Authentication.Extensions;
@@ -63,6 +64,19 @@ public class Users: ICarterModule
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Changes user's password if the user logged in");
+
+        group.MapPatch("ForgotPassword",
+            async ([FromBody] ForgotPasswordQuery request, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(request, cancellationToken);
+
+                return await result.MapToResponse(cancellationToken);
+            })
+            .AllowAnonymous()
+            .Produces<Ok<BaseResponse>>()
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .WithSummary("Requests new password if it has been forgotten");
     }
 }
 
