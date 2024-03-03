@@ -9,6 +9,7 @@ using Application.Genres.CreateGenre;
 using Application.Genres.RenameGenre;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
+using Application.Users.ForgotPassword;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,7 +45,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<VerifyEmailCommand, bool>()
             .AddValidationBehavior<RequestVerificationQuery, bool>()
             .AddValidationBehavior<CreateGenreCommand, bool>()
-            .AddValidationBehavior<RenameGenreCommand, bool>();
+            .AddValidationBehavior<RenameGenreCommand, bool>()
+            .AddValidationBehavior<ForgotPasswordQuery, bool>();
     }
     
     /// <summary>

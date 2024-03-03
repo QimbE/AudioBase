@@ -8,4 +8,6 @@ namespace Application.Authentication;
 public interface IEmailSender
 {
     Task SendVerificationEmail(User user);
+
+    Task SendChangePasswordEmail(User user, string newPassword);
 }

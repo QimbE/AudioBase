@@ -116,4 +116,9 @@ public class User
     {
         RaiseEvent(new UserCreatedDomainEvent(this.Id));
     }
+
+    public void RequestPasswordChange()
+    {
+        RaiseEvent(new PasswordChangeRequestedDomainEvent(this.Id));
+    }
 }
