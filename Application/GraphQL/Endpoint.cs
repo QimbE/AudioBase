@@ -1,4 +1,5 @@
 ﻿using Application.DataAccess;
+using Domain.Artists;
 using Domain.Tracks;
 using Domain.Users;
 using HotChocolate;
@@ -34,5 +35,18 @@ public class Endpoint
     )
     {
         return context.Genres;
+    }
+    
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Artist>> GetArtists(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        return context.Artists;
     }
 }
