@@ -1,4 +1,5 @@
 using Application.Artists.CreateArtist;
+using Application.Artists.DeleteArtist;
 using Application.Artists.UpdateArtist;
 using Carter;
 using Domain.Users;
@@ -54,5 +55,21 @@ public class Artists: ICarterModule
             .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Updates data of existing artist");
+        
+        group.MapDelete(
+                "DeleteArtist",
+                async ([FromBody] DeleteArtistCommand request, ISender sender,
+                    CancellationToken cancellationToken) =>
+                {
+                    var result = await sender.Send(request, cancellationToken);
+
+                    return await result.MapToResponse(cancellationToken);
+                })
+            .UserShouldBeAtLeast(Role.CatalogAdmin)
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .WithSummary("Deletes artist");
     }
 }
