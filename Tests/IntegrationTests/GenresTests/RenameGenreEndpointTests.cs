@@ -21,6 +21,41 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
     {
     }
     
+    [Fact]
+    public async Task RenameGenreEndpoint_Should_ReturnBadRequest_OnNullId()
+    {
+        // Arrange
+        string createName = "Hip-Hop";
+        
+        string newName = "Rock";
+        
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.Admin);
+
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        context.Users.Add(user);
+
+        context.Genres.Add(Genre.Create(createName));
+
+        await context.SaveChangesAsync();
+
+        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
+        
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
+        
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        
+        var request = new RenameGenreCommand(new Guid(), newName);
+        
+        // Act
+        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
     [Theory]
     [InlineData(null)]
     [InlineData("")]

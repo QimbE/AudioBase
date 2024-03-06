@@ -19,6 +19,43 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
     {
     }
     
+    [Fact]
+    public async Task UpdateArtistEndpoint_Should_ReturnBadRequest_OnNullId()
+    {
+        // Arrange
+        string createName = "OldName";
+        string createDesc = "Desc";
+        string createPhotoLink = "https://rofliks.com/roflan.gif";
+        
+        string newName = "NewName";
+        
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.CatalogAdmin);
+
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        context.Users.Add(user);
+
+        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+
+        await context.SaveChangesAsync();
+
+        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
+        
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        
+        var request = new UpdateArtistCommand(new Guid(), newName, createDesc, createPhotoLink);
+        
+        // Act
+        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
     [Theory]
     [InlineData(null)]
     [InlineData("")]
