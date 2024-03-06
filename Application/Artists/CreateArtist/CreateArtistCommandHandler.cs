@@ -27,7 +27,7 @@ public class CreateArtistCommandHandler : IRequestHandler<CreateArtistCommand, R
             return new(new ArtistWithSameDataException());
         }
 
-        // New genre
+        // New artist
         var artist = Artist.Create(request.Name, request.Description, request.PhotoLink);
 
         _context.Artists.Add(artist);

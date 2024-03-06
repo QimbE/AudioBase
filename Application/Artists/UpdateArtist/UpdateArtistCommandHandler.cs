@@ -33,7 +33,7 @@ public class UpdateArtistCommandHandler: IRequestHandler<UpdateArtistCommand, Re
             return new(new ArtistWithSameDataException());
         }
 
-        // Update genre
+        // Update artist
         artistFromDb.Update(request.Name, request.Description, request.PhotoLink);
 
         await _context.SaveChangesAsync(cancellationToken);
