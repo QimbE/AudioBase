@@ -24,7 +24,7 @@ public class CreateArtistCommandHandler : IRequestHandler<CreateArtistCommand, R
                 cancellationToken)
            )
         {
-            return new(new ArtistWithSameNameException());
+            return new(new ArtistWithSameDataException());
         }
 
         // New genre
