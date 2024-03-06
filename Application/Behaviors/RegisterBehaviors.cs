@@ -1,4 +1,5 @@
 ﻿using Application.Artists.CreateArtist;
+using Application.Artists.UpdateArtist;
 using Application.Authentication;
 using Application.Authentication.Login;
 using Application.Authentication.Logout;
@@ -48,7 +49,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<CreateGenreCommand, bool>()
             .AddValidationBehavior<RenameGenreCommand, bool>()
             .AddValidationBehavior<ForgotPasswordQuery, bool>()
-            .AddValidationBehavior<CreateArtistCommand, bool>();
+            .AddValidationBehavior<CreateArtistCommand, bool>()
+            .AddValidationBehavior<UpdateArtistCommand, bool>();
     }
     
     /// <summary>
