@@ -1,4 +1,7 @@
-﻿using Application.Authentication;
+﻿using Application.Artists.CreateArtist;
+using Application.Artists.DeleteArtist;
+using Application.Artists.UpdateArtist;
+using Application.Authentication;
 using Application.Authentication.Login;
 using Application.Authentication.Logout;
 using Application.Authentication.Refresh;
@@ -46,7 +49,10 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<RequestVerificationQuery, bool>()
             .AddValidationBehavior<CreateGenreCommand, bool>()
             .AddValidationBehavior<RenameGenreCommand, bool>()
-            .AddValidationBehavior<ForgotPasswordQuery, bool>();
+            .AddValidationBehavior<ForgotPasswordQuery, bool>()
+            .AddValidationBehavior<CreateArtistCommand, bool>()
+            .AddValidationBehavior<UpdateArtistCommand, bool>()
+            .AddValidationBehavior<DeleteArtistCommand, bool>();
     }
     
     /// <summary>

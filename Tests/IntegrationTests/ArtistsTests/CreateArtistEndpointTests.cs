@@ -1,56 +1,78 @@
 using System.Net;
 using System.Net.Http.Json;
+using Application.Artists.CreateArtist;
 using Application.Authentication;
-using Application.Genres.CreateGenre;
-using Application.Genres.RenameGenre;
-using Application.Users.ChangeRole;
-using Domain.Tracks;
+using Domain.Artists;
 using Domain.Users;
 using FluentAssertions;
 using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.ResponseHandling.Response;
 
-namespace IntegrationTests.GenresTests;
+namespace IntegrationTests.ArtistsTests;
 
-public class RenameGenreEndpointTests: BaseIntegrationTest
+public class CreateArtistEndpointTests: BaseIntegrationTest
 {
-    public RenameGenreEndpointTests(IntegrationTestWebAppFactory factory)
+    public CreateArtistEndpointTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
     }
     
-    [Fact]
-    public async Task RenameGenreEndpoint_Should_ReturnBadRequest_OnNullId()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("0123456789 0123456789 0123456789 0123456789 0123456789 0123456789")] // Exceeds max size
+    public async Task CreateArtistEndpoint_Should_ReturnBadRequest_OnInvalidArtistName(string artistName)
     {
         // Arrange
-        string createName = "Hip-Hop";
-        
-        string newName = "Rock";
-        
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
-        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.Admin);
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.CatalogAdmin);
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
-        context.Genres.Add(Genre.Create(createName));
-
         await context.SaveChangesAsync();
-
-        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(new Guid(), newName);
+        var request = new CreateArtistCommand(artistName, "rofliks", "https://upload.wikimedia.org/wikipedia/commons/6/64/MF_Doom_-_Hultsfred_2011_%28cropped%29.jpg");
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
+        var response = await HttpClient.PostAsJsonAsync("Artists/CreateArtist", request);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Fact]
+    public async Task CreateArtistEndpoint_Should_ReturnBadRequest_OnInvalidArtistDescription()
+    {
+        // Arrange
+        String tooLarge = String.Concat(Enumerable.Repeat("0123456789", 201)); // Exceeds max size
+        
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+        
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.CatalogAdmin);
+
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        context.Users.Add(user);
+
+        await context.SaveChangesAsync();
+        
+        var accessToken = await jwtProvider.GenerateAccessToken(user);
+        
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        
+        var request = new CreateArtistCommand("MF DOOM", tooLarge, "https://upload.wikimedia.org/wikipedia/commons/6/64/MF_Doom_-_Hultsfred_2011_%28cropped%29.jpg");
+        
+        // Act
+        var response = await HttpClient.PostAsJsonAsync("Artists/CreateArtist", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -60,46 +82,36 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task RenameGenreEndpoint_Should_ReturnBadRequest_OnInvalidGenreName(string genreName)
+    public async Task CreateArtistEndpoint_Should_ReturnBadRequest_OnInvalidPhotoLink(string photoLink)
     {
         // Arrange
-        string createName = "Hip-Hop";
-        
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
-        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.Admin);
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.CatalogAdmin);
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
-        context.Genres.Add(Genre.Create(createName));
-
         await context.SaveChangesAsync();
-
-        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(genreByName.Id ,genreName);
+        var request = new CreateArtistCommand("MF DOOM", "rofliks", photoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
+        var response = await HttpClient.PostAsJsonAsync("Artists/CreateArtist", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task RenameGenreEndpoint_Should_ReturnForbidden_OnLowUserRole()
+    public async Task CreateArtistEndpoint_Should_ReturnForbidden_OnLowUserRole()
     {
         // Arrange
-        string createName = "Hip-Hop";
-        
-        string newName = "Rock";
-        
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
         var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.DefaultUser);
@@ -108,123 +120,75 @@ public class RenameGenreEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Genres.Add(Genre.Create(createName));
-
         await context.SaveChangesAsync();
-
-        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(genreByName.Id ,newName);
+        var request = new CreateArtistCommand("MF DOOM", "rofliks", "https://upload.wikimedia.org/wikipedia/commons/6/64/MF_Doom_-_Hultsfred_2011_%28cropped%29.jpg");
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
+        var response = await HttpClient.PostAsJsonAsync("Artists/CreateArtist", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
     
     [Fact]
-    public async Task RenameGenreEndpoint_Should_ReturnNotFound_OnNonExistentGenre()
+    public async Task CreateArtistEndpoint_Should_ReturnConflict_OnDuplicateArtistName()
     {
         // Arrange
-        string createName = "Hip-Hop";
-        
-        string newName = "Rock";
-        
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
-        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.Admin);
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.CatalogAdmin);
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+        var firstArtist = Artist.Create("MF DOOM", "rofliks",
+            "https://upload.wikimedia.org/wikipedia/commons/6/64/MF_Doom_-_Hultsfred_2011_%28cropped%29.jpg");
+
         context.Users.Add(user);
 
-        context.Genres.Add(Genre.Create(createName));
+        context.Artists.Add(firstArtist);
 
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
-        
-        var request = new RenameGenreCommand(Guid.NewGuid() , newName);
+
+        var request = new CreateArtistCommand("MF DOOM", "roflanchik", "https://rofliks.com/rofl.gif");
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
-        
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-    
-    [Fact]
-    public async Task RenameGenreEndpoint_Should_ReturnConflict_OnDuplicateGenreName()
-    {
-        // Arrange
-        string createName = "Hip-Hop";
-        
-        string newName = "hip-hop";
-        
-        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
-        
-        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.Admin);
-
-        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        context.Users.Add(user);
-
-        context.Genres.Add(Genre.Create(createName));
-
-        await context.SaveChangesAsync();
-
-        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
-        
-        var accessToken = await jwtProvider.GenerateAccessToken(user);
-        
-        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
-        
-        var request = new RenameGenreCommand(genreByName.Id ,newName);
-        
-        // Act
-        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
+        var response = await HttpClient.PostAsJsonAsync("Artists/CreateArtist", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
     
     [Fact]
-    public async Task RenameGenreEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task CreateArtistEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
-        string createName = "Hip-Hop";
-        
-        string newName = "Rock";
-        
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
-        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.Admin);
+        var user = User.Create("Bimba", "Bombom@gmail.com", "BimBam123", Role.CatalogAdmin);
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         context.Users.Add(user);
 
-        context.Genres.Add(Genre.Create(createName));
-
         await context.SaveChangesAsync();
-
-        var genreByName = context.Genres.SingleOrDefaultAsync(g => g.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new RenameGenreCommand(genreByName.Id ,newName);
+        var request = new CreateArtistCommand("MF DOOM", "rofliks", "https://upload.wikimedia.org/wikipedia/commons/6/64/MF_Doom_-_Hultsfred_2011_%28cropped%29.jpg");
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Genres/RenameGenre", request);
+        var response = await HttpClient.PostAsJsonAsync("Artists/CreateArtist", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -49,6 +49,19 @@ public class EndpointTests: BaseIntegrationTest
                                          }
                                      }
                                      """;
+
+    private const string artistQuery = """
+                                       query {
+                                           artists{
+                                               nodes{
+                                                   id
+                                                   name
+                                                   description
+                                                   photoLink
+                                               }
+                                           }
+                                       }
+                                       """;
     
     [Fact]
     public async Task UserEndpoint_Should_ReturnUnauthorized_OnNotAdmin()
@@ -103,7 +116,7 @@ public class EndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task ContentAdminEndpoint_Should_ReturnValidResponse_OnDefaultUser()
+    public async Task GenreEndpoint_Should_ReturnValidResponse_OnValidRequest()
     {
         // Arrange
         var name = "bimbimbam";
@@ -139,5 +152,44 @@ public class EndpointTests: BaseIntegrationTest
         var content = await res.Content.ReadAsStringAsync();
 
         content.Should().StartWithEquivalentOf("""{"data":{"genres":{"nodes":""");
+    }
+    
+    [Fact]
+    public async Task ArtistEndpoint_Should_ReturnValidResponse_OnValidRequest()
+    {
+        // Arrange
+        var name = "bimbimbam";
+        var email = "bam123bim@bam.ru";
+        var password = "bimbimbimBamBamBam";
+      
+        var registerRequest = new RegisterCommand(name, email, password);
+      
+        var loginRequest = new LoginCommand(email, password);
+      
+        await HttpClient.PostAsJsonAsync("Authentication/Register", registerRequest);
+
+        using var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var user = context.Users.SingleOrDefault(u => u.Email == registerRequest.Email);
+      
+        user!.VerifyEmail();
+        
+        user!.Update(user.Name, user.Email, user.Password, Role.DefaultUser);
+
+        await context.SaveChangesAsync();
+
+        var loginRes = await HttpClient.PutAsJsonAsync("Authentication/Login", loginRequest);
+      
+        var responseWrapper = await loginRes.Content.ReadFromJsonAsync<ResponseWithData<UserResponseDto>>();
+      
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {responseWrapper!.Data.AccessToken}"]);
+        
+        // Act
+        var res = await HttpClient.GetAsync($"graphql?query={artistQuery}");
+        
+        // Assert
+        var content = await res.Content.ReadAsStringAsync();
+
+        content.Should().StartWithEquivalentOf("""{"data":{"artists":{"nodes":""");
     }
 }
