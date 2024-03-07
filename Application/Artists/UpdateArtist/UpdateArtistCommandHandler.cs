@@ -30,7 +30,7 @@ public class UpdateArtistCommandHandler: IRequestHandler<UpdateArtistCommand, Re
                 cancellationToken)
            )
         {
-            return new(new ArtistWithSameDataException());
+            return new(new ArtistUnchangedException());
         }
 
         // Update artist
