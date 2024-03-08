@@ -20,7 +20,7 @@ public class CreateArtistCommandHandler : IRequestHandler<CreateArtistCommand, R
     {
         // Artist name should be unique
         if (await _context.Artists.AnyAsync(
-                g => g.Name.ToLower() == request.Name.ToLower(),
+                a => a.Name.ToLower() == request.Name.ToLower(),
                 cancellationToken)
            )
         {
