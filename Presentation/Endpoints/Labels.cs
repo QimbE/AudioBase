@@ -1,4 +1,5 @@
 using Application.Labels.CreateLabel;
+using Application.Labels.UpdateLabel;
 using Carter;
 using Domain.Users;
 using Infrastructure.Authentication.Extensions;
@@ -36,5 +37,22 @@ public class Labels: ICarterModule
             .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Creates a new label");
+        
+        group.MapPut(
+                "UpdateLabel",
+                async ([FromBody] UpdateLabelCommand request, ISender sender,
+                    CancellationToken cancellationToken) =>
+                {
+                    var result = await sender.Send(request, cancellationToken);
+
+                    return await result.MapToResponse(cancellationToken);
+                })
+            .UserShouldBeAtLeast(Role.CatalogAdmin)
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .Produces<Conflict>(StatusCodes.Status409Conflict)
+            .WithSummary("Updates data of existing label");
     }
 }
