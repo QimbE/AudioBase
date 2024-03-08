@@ -11,6 +11,7 @@ using Application.Authentication.VerifyEmail;
 using Application.Genres.CreateGenre;
 using Application.Genres.RenameGenre;
 using Application.Labels.CreateLabel;
+using Application.Labels.DeleteLabel;
 using Application.Labels.UpdateLabel;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
@@ -56,7 +57,8 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<UpdateArtistCommand, bool>()
             .AddValidationBehavior<DeleteArtistCommand, bool>()
             .AddValidationBehavior<CreateLabelCommand, bool>()
-            .AddValidationBehavior<UpdateLabelCommand, bool>();
+            .AddValidationBehavior<UpdateLabelCommand, bool>()
+            .AddValidationBehavior<DeleteLabelCommand, bool>();
     }
     
     /// <summary>

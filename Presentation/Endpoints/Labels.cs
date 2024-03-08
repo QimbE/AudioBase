@@ -1,4 +1,5 @@
 using Application.Labels.CreateLabel;
+using Application.Labels.DeleteLabel;
 using Application.Labels.UpdateLabel;
 using Carter;
 using Domain.Users;
@@ -54,5 +55,21 @@ public class Labels: ICarterModule
             .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Updates data of existing label");
+        
+        group.MapDelete(
+                "DeleteLabel",
+                async ([FromBody] DeleteLabelCommand request, ISender sender,
+                    CancellationToken cancellationToken) =>
+                {
+                    var result = await sender.Send(request, cancellationToken);
+
+                    return await result.MapToResponse(cancellationToken);
+                })
+            .UserShouldBeAtLeast(Role.CatalogAdmin)
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .WithSummary("Deletes label");
     }
 }
