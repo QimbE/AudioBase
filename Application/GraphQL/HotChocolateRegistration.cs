@@ -15,6 +15,7 @@ public static class HotChocolateRegistration
             .AddType<ReleaseTypeType>()
             .AddType<GenreType>()
             .AddType<ArtistType>()
+            .AddType<LabelType>()
             .AddProjections()
             .AddSorting()
             .AddFiltering()
