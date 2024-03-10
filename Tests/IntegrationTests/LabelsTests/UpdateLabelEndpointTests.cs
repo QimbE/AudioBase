@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using Application.Artists.UpdateArtist;
 using Application.Authentication;
-using Domain.Artists;
+using Application.Labels.UpdateLabel;
+using Domain.Labels;
 using Domain.Users;
 using FluentAssertions;
 using Infrastructure.Data;
@@ -10,17 +10,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.ResponseHandling.Response;
 
-namespace IntegrationTests.ArtistsTests;
+namespace IntegrationTests.LabelsTests;
 
-public class UpdateArtistEndpointTests: BaseIntegrationTest
+public class UpdateLabelEndpointTests: BaseIntegrationTest
 {
-    public UpdateArtistEndpointTests(IntegrationTestWebAppFactory factory)
+    public UpdateLabelEndpointTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnBadRequest_OnNullId()
+    public async Task UpdateLabelEndpoint_Should_ReturnBadRequest_OnNullId()
     {
         // Arrange
         string createName = "OldName";
@@ -37,20 +37,20 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l => l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(new Guid(), newName, createDesc, createPhotoLink);
+        var request = new UpdateLabelCommand(new Guid(), newName, createDesc, createPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -61,7 +61,7 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
     [InlineData("")]
     [InlineData(" ")]
     [InlineData("0123456789 0123456789 0123456789 0123456789 0123456789 0123456789")] // Exceeds max size
-    public async Task UpdateArtistEndpoint_Should_ReturnBadRequest_OnInvalidArtistName(string artistName)
+    public async Task UpdateLabelEndpoint_Should_ReturnBadRequest_OnInvalidLabelName(string labelName)
     {
         // Arrange
         string createName = "OldName";
@@ -76,27 +76,27 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, artistName, createDesc, createPhotoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, labelName, createDesc, createPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnBadRequest_OnInvalidDescription()
+    public async Task UpdateLabelEndpoint_Should_ReturnBadRequest_OnInvalidDescription()
     {
         // Arrange
         string createName = "OldName";
@@ -113,20 +113,20 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, createName, tooLarge, createPhotoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, createName, tooLarge, createPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -136,7 +136,7 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task UpdateArtistEndpoint_Should_ReturnBadRequest_OnInvalidPhotoLink(string photoLink)
+    public async Task UpdateLabelEndpoint_Should_ReturnBadRequest_OnInvalidPhotoLink(string photoLink)
     {
         // Arrange
         string createName = "OldName";
@@ -151,27 +151,27 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, createName, createDesc, photoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, createName, createDesc, photoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnForbidden_OnLowUserRole()
+    public async Task UpdateLabelEndpoint_Should_ReturnForbidden_OnLowUserRole()
     {
         // Arrange
         string createName = "OldName";
@@ -189,27 +189,27 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, newName, createDesc, newPhotoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, newName, createDesc, newPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnNotFound_OnNonexistentArtist()
+    public async Task UpdateLabelEndpoint_Should_ReturnNotFound_OnNonexistentLabel()
     {
         // Arrange
         string createName = "OldName";
@@ -227,7 +227,7 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
         
@@ -235,17 +235,17 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(Guid.NewGuid(), newName, createDesc, newPhotoLink);
+        var request = new UpdateLabelCommand(Guid.NewGuid(), newName, createDesc, newPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnBaseResponse_OnEqualData()
+    public async Task UpdateLabelEndpoint_Should_ReturnBaseResponse_OnEqualData()
     {
         // Arrange
         string createName = "OldName";
@@ -260,20 +260,20 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, createName, createDesc, createPhotoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, createName, createDesc, createPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -284,7 +284,7 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnConflict_OnDuplicateName()
+    public async Task UpdateLabelEndpoint_Should_ReturnConflict_OnDuplicateName()
     {
         // Arrange
         string toChangeName = "toChangeName";
@@ -300,28 +300,28 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(toChangeName, createDesc, createPhotoLink));
-        context.Artists.Add(Artist.Create(toFindName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(toChangeName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(toFindName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == toChangeName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == toChangeName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, toFindName, createDesc, createPhotoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, toFindName, createDesc, createPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task UpdateLabelEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
         string createName = "OldName";
@@ -339,20 +339,20 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
 
         context.Users.Add(user);
 
-        context.Artists.Add(Artist.Create(createName, createDesc, createPhotoLink));
+        context.Labels.Add(Label.Create(createName, createDesc, createPhotoLink));
 
         await context.SaveChangesAsync();
 
-        var artistByName = context.Artists.SingleOrDefaultAsync(a => a.Name == createName).Result;
+        var labelByName = context.Labels.SingleOrDefaultAsync(l=> l.Name == createName).Result;
         
         var accessToken = await jwtProvider.GenerateAccessToken(user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateArtistCommand(artistByName.Id, newName, createDesc, newPhotoLink);
+        var request = new UpdateLabelCommand(labelByName.Id, newName, createDesc, newPhotoLink);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
+        var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -25,12 +25,12 @@ public class UpdateArtistCommandHandler: IRequestHandler<UpdateArtistCommand, Re
         }
         
         // if artist with same name is already in DB
-        if (await _context.Artists.AnyAsync(
-                a => a.Name == request.Name && a.Description == request.Description && a.PhotoLink == request.PhotoLink,
-                cancellationToken)
-           )
+        var artistWithSameName = await _context.Artists.SingleOrDefaultAsync(
+            a => a.Name.ToLower() == request.Name.ToLower(),
+            cancellationToken);
+        if (artistWithSameName is not null && artistWithSameName!=artistFromDb)
         {
-            return new(new ArtistUnchangedException());
+            return new(new ArtistWithSameNameException());
         }
 
         // Update artist
