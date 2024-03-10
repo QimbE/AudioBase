@@ -245,7 +245,7 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task UpdateArtistEndpoint_Should_ReturnConflict_OnEqualData()
+    public async Task UpdateArtistEndpoint_Should_ReturnBaseResponse_OnEqualData()
     {
         // Arrange
         string createName = "OldName";
@@ -276,7 +276,11 @@ public class UpdateArtistEndpointTests: BaseIntegrationTest
         var response = await HttpClient.PutAsJsonAsync("Artists/UpdateArtist", request);
         
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var content = await response.Content.ReadFromJsonAsync<BaseResponse>();
+
+        content.Should().NotBeNull();
     }
     
     [Fact]

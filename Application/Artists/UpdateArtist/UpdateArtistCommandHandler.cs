@@ -24,12 +24,6 @@ public class UpdateArtistCommandHandler: IRequestHandler<UpdateArtistCommand, Re
             return new(new ArtistNotFoundException(request.Id));
         }
         
-        // Data unchanged
-        if (artistFromDb.Name == request.Name && artistFromDb.Description == request.Description && artistFromDb.PhotoLink == request.PhotoLink)
-        {
-            return new(new ArtistUnchangedException());
-        }
-        
         // if artist with same name is already in DB
         var artistWithSameName = await _context.Artists.SingleOrDefaultAsync(
             a => a.Name.ToLower() == request.Name.ToLower(),

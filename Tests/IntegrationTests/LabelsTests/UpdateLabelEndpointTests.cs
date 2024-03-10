@@ -245,7 +245,7 @@ public class UpdateLabelEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task UpdateLabelEndpoint_Should_ReturnConflict_OnEqualData()
+    public async Task UpdateLabelEndpoint_Should_ReturnBaseResponse_OnEqualData()
     {
         // Arrange
         string createName = "OldName";
@@ -276,7 +276,11 @@ public class UpdateLabelEndpointTests: BaseIntegrationTest
         var response = await HttpClient.PutAsJsonAsync("Labels/UpdateLabel", request);
         
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var content = await response.Content.ReadFromJsonAsync<BaseResponse>();
+
+        content.Should().NotBeNull();
     }
     
     [Fact]

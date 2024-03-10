@@ -23,13 +23,7 @@ public class UpdateLabelCommandHandler: IRequestHandler<UpdateLabelCommand, Resu
         {
             return new(new LabelNotFoundException(request.Id));
         }
-        
-        // Data unchanged
-        if (labelFromDb.Name == request.Name && labelFromDb.Description == request.Description && labelFromDb.PhotoLink == request.PhotoLink)
-        {
-            return new(new LabelUnchangedException());
-        }
-        
+
         // if label with same name is already in DB
         var labelWithSameName = await _context.Labels.SingleOrDefaultAsync(
             l => l.Name.ToLower() == request.Name.ToLower(),
