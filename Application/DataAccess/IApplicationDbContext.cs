@@ -1,4 +1,5 @@
 ﻿using Domain.Artists;
+using Domain.Favorites;
 using Domain.Junctions;
 using Domain.Labels;
 using Domain.MusicReleases;
@@ -15,6 +16,8 @@ public interface IApplicationDbContext
     DbSet<Role> Roles { get; set; }
     
     DbSet<RefreshToken> RefreshTokens { get; set; }
+    
+    DbSet<Favorite> Favorites { get; }
     
     DbSet<Track> Tracks { get; }
     

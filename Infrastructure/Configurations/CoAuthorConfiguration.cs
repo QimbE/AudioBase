@@ -10,20 +10,20 @@ public class CoAuthorConfiguration: IEntityTypeConfiguration<CoAuthor>
 {
     public void Configure(EntityTypeBuilder<CoAuthor> builder)
     {
-        builder.HasKey(lr => lr.Id);
+        builder.HasKey(ca => ca.Id);
 
-        builder.Property(lr => lr.TrackId).IsRequired();
+        builder.Property(ca => ca.TrackId).IsRequired();
 
-        builder.Property(lr => lr.CoAuthorId).IsRequired();
+        builder.Property(ca => ca.CoAuthorId).IsRequired();
         
         builder.HasOne<Artist>(ca=> ca.Artist)
             .WithMany()
-            .HasForeignKey(lr => lr.CoAuthorId)
+            .HasForeignKey(ca => ca.CoAuthorId)
             .IsRequired();
         
         builder.HasOne<Track>(ca=>ca.Track)
             .WithMany(t=>t.CoAuthors)
-            .HasForeignKey(lr => lr.TrackId)
+            .HasForeignKey(ca => ca.TrackId)
             .IsRequired();
     }
 }
