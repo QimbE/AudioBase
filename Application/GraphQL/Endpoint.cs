@@ -1,5 +1,6 @@
 ﻿using Application.DataAccess;
 using Domain.Artists;
+using Domain.Favorites;
 using Domain.Labels;
 using Domain.Tracks;
 using Domain.Users;
@@ -7,6 +8,7 @@ using HotChocolate;
 using HotChocolate.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Application.GraphQL;
 
@@ -62,5 +64,38 @@ public class Endpoint
     )
     {
         return context.Labels;
+    }
+    
+    // Gets junction table data
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Favorite>> GetFavorites(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        return context.Favorites;
+    }
+    
+    // Gets Users favorite tracks
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Track>> GetFavoriteTracks(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        List<Track> tracks = new List<Track>();
+        foreach (var fav in context.Favorites)
+        {
+            tracks.Append(fav.Track);
+        }
+        return new EnumerableQuery<Track>(tracks);
     }
 }
