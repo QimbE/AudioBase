@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
+using Domain.Favorites;
 using Domain.Users.Events;
 using Throw;
 
@@ -64,6 +65,8 @@ public class User
     public Role Role { get; protected set; }
 
     public RefreshToken RefreshToken { get; protected set; }
+
+    public List<Favorite> Favorites { get; protected set; }
 
     protected User()
     {
