@@ -1,5 +1,6 @@
 ﻿using Application.DataAccess;
 using Domain.Artists;
+using Domain.Labels;
 using Domain.Tracks;
 using Domain.Users;
 using HotChocolate;
@@ -48,5 +49,18 @@ public class Endpoint
     )
     {
         return context.Artists;
+    }
+    
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Label>> GetLabels(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        return context.Labels;
     }
 }
