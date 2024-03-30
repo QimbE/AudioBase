@@ -1,5 +1,6 @@
 ﻿using Application.DataAccess;
 using Domain.Artists;
+using Domain.Favorites;
 using Domain.Junctions;
 using Domain.Labels;
 using Domain.MusicReleases;
@@ -39,6 +40,11 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
     /// List of attempts to process outbox messages.
     /// </summary>
     public DbSet<OutboxMessageConsumer> OutboxMessageConsumers { get; set; }
+    
+    /// <summary>
+    /// Music genres
+    /// </summary>
+    public DbSet<Favorite> Favorites { get; set; }
     
     /// <summary>
     /// Music genres
