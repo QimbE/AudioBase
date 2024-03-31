@@ -84,11 +84,12 @@ public class Track
     
     public List<CoAuthor> CoAuthors { get; protected set; }
     
-    public Artist Author
+    // Breaks EF Core logic creating additional FK
+    /*public Artist Author
     {
         get => Release.Author;
         protected set => Author = value;
-    }
+    }*/
     
     protected Track()
     {
