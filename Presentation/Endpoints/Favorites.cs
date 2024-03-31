@@ -1,4 +1,5 @@
 using Application.Favorites.CreateFavorite;
+using Application.Favorites.DeleteFavorite;
 using Carter;
 using Domain.Users;
 using Infrastructure.Authentication.Extensions;
@@ -46,6 +47,32 @@ public class Favorites : ICarterModule
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
+            .Produces<Conflict>(StatusCodes.Status409Conflict)
+            .WithSummary("Adds a track to favorites");
+        
+        group.MapDelete(
+                "DeleteFavorite",
+                async (HttpContext context, [FromQuery] Guid trackId, ISender sender
+                    , CancellationToken cancellationToken) =>
+                {
+                    var userToken = context.Request.Cookies[RefreshTokenCookieName];
+
+                    if (userToken is null)
+                    {
+                        return Results.Unauthorized();
+                    }
+                    
+                    var request = new DeleteFavoriteCommand(userToken, trackId);
+                    
+                    var result = await sender.Send(request, cancellationToken);
+
+                    return await result.MapToResponse(cancellationToken);
+                })
+            .AllowAnonymous()
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Adds a track to favorites");
     }
