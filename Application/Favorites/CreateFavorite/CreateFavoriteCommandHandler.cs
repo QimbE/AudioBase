@@ -19,8 +19,7 @@ public class CreateFavoriteCommandHandler: IRequestHandler<CreateFavoriteCommand
     
     public async Task<Result<bool>> Handle(CreateFavoriteCommand request, CancellationToken cancellationToken)
     {
-        RefreshToken? user = _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Value == request.UserToken, cancellationToken).Result;
+        User? user = _context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId).Result;
 
         if (user is null)
         {

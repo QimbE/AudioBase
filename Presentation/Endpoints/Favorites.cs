@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Application.Favorites.CreateFavorite;
 using Application.Favorites.DeleteFavorite;
 using Carter;
@@ -30,14 +31,14 @@ public class Favorites : ICarterModule
                 async (HttpContext context, [FromQuery] Guid trackId, ISender sender
                     , CancellationToken cancellationToken) =>
                 {
-                    var userToken = context.Request.Cookies[RefreshTokenCookieName];
-
-                    if (userToken is null)
+                    var userClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+                    
+                    if (userClaim is null)
                     {
                         return Results.Unauthorized();
                     }
                     
-                    var request = new CreateFavoriteCommand(userToken, trackId);
+                    var request = new CreateFavoriteCommand(new Guid(userClaim.Value), trackId);
                     
                     var result = await sender.Send(request, cancellationToken);
 
