@@ -31,7 +31,7 @@ public class Favorites : ICarterModule
                 async (HttpContext context, [FromQuery] Guid trackId, ISender sender
                     , CancellationToken cancellationToken) =>
                 {
-                    var userClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+                    var userClaim = context.User.Claims.FirstOrDefault(claim =>claim.Type == ClaimTypes.NameIdentifier);
                     
                     if (userClaim is null)
                     {
@@ -44,7 +44,7 @@ public class Favorites : ICarterModule
 
                     return await result.MapToResponse(cancellationToken);
                 })
-            .AllowAnonymous()
+            .UserShouldBeAtLeast(Role.DefaultUser)
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
@@ -56,20 +56,20 @@ public class Favorites : ICarterModule
                 async (HttpContext context, [FromQuery] Guid trackId, ISender sender
                     , CancellationToken cancellationToken) =>
                 {
-                    var userToken = context.Request.Cookies[RefreshTokenCookieName];
+                    var userClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
 
-                    if (userToken is null)
+                    if (userClaim is null)
                     {
                         return Results.Unauthorized();
                     }
                     
-                    var request = new DeleteFavoriteCommand(userToken, trackId);
+                    var request = new DeleteFavoriteCommand(new Guid(userClaim.Value), trackId);
                     
                     var result = await sender.Send(request, cancellationToken);
 
                     return await result.MapToResponse(cancellationToken);
                 })
-            .AllowAnonymous()
+            .UserShouldBeAtLeast(Role.DefaultUser)
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
