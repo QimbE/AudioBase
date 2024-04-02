@@ -48,6 +48,7 @@ public class Favorites : ICarterModule
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<UnauthorizedHttpResult>(StatusCodes.Status401Unauthorized)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Adds a track to favorites");
         

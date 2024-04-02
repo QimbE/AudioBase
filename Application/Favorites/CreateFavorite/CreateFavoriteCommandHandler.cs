@@ -1,6 +1,8 @@
 using Application.DataAccess;
 using Domain.Favorites;
 using Domain.Favorites.Exceptions;
+using Domain.Tracks;
+using Domain.Tracks.Exceptions;
 using Domain.Users;
 using Domain.Users.Exceptions;
 using MediatR;
@@ -26,9 +28,16 @@ public class CreateFavoriteCommandHandler: IRequestHandler<CreateFavoriteCommand
             return new(new UserNotFoundException());
         }
         
+        Track? track = _context.Tracks.FirstOrDefaultAsync(t => t.Id == request.TrackId).Result;
+
+        if (track is null)
+        {
+            return new(new TrackNotFoundException());
+        }
+        
         // Track should not be favorite already
         if (await _context.Favorites.AnyAsync(
-                f => f.UserId == user.Id
+                f => f.UserId == request.UserId
                      && f.TrackId == request.TrackId,
                 cancellationToken)
            )

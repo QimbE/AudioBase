@@ -7,9 +7,9 @@ public class CreateFavoriteCommandValidator: AbstractValidator<CreateFavoriteCom
     public CreateFavoriteCommandValidator()
     {
         RuleFor(cfc => cfc.UserId)
-            .NotNull();
+            .NotEmpty();
         
         RuleFor(cfc => cfc.TrackId)
-            .NotNull();
+            .NotEmpty();
     }
 }
