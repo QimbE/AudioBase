@@ -7,9 +7,9 @@ public class DeleteFavoriteCommandValidator: AbstractValidator<DeleteFavoriteCom
     public DeleteFavoriteCommandValidator()
     {
         RuleFor(dfc => dfc.UserId)
-            .NotNull();
+            .NotEmpty();
         
         RuleFor(dfc => dfc.TrackId)
-            .NotNull();
+            .NotEmpty();
     }
 }
