@@ -8,6 +8,8 @@ using Application.Authentication.Refresh;
 using Application.Authentication.Register;
 using Application.Authentication.RequestVerification;
 using Application.Authentication.VerifyEmail;
+using Application.Favorites.CreateFavorite;
+using Application.Favorites.DeleteFavorite;
 using Application.Genres.CreateGenre;
 using Application.Genres.RenameGenre;
 using Application.Labels.CreateLabel;
@@ -58,7 +60,9 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<DeleteArtistCommand, bool>()
             .AddValidationBehavior<CreateLabelCommand, bool>()
             .AddValidationBehavior<UpdateLabelCommand, bool>()
-            .AddValidationBehavior<DeleteLabelCommand, bool>();
+            .AddValidationBehavior<DeleteLabelCommand, bool>()
+            .AddValidationBehavior<AddFavoriteCommand, bool>()
+            .AddValidationBehavior<DeleteFavoriteCommand, bool>();
     }
     
     /// <summary>
