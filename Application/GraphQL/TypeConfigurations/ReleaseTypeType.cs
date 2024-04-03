@@ -3,11 +3,11 @@ using HotChocolate.Types;
 
 namespace Application.GraphQL.TypeConfigurations;
 
-public class ReleaseTypeType : EnumType<ReleaseType>
+public class ReleaseTypeType : EnumType<Domain.MusicReleases.ReleaseType>
 {
-    protected override void Configure(IEnumTypeDescriptor<ReleaseType> descriptor)
+    protected override void Configure(IEnumTypeDescriptor<Domain.MusicReleases.ReleaseType> descriptor)
     {
-        foreach (var rt in ReleaseType.List)
+        foreach (var rt in Domain.MusicReleases.ReleaseType.List)
         {
             descriptor.Value(rt).Name(rt.Name);
         }

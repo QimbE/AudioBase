@@ -2,6 +2,7 @@
 using Domain.Artists;
 using Domain.Favorites;
 using Domain.Labels;
+using Domain.MusicReleases;
 using Domain.Tracks;
 using Domain.Users;
 using HotChocolate;
@@ -97,5 +98,18 @@ public class Endpoint
             tracks.Append(fav.Track);
         }
         return new EnumerableQuery<Track>(tracks);
+    }
+    
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Release>> GetReleases(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        return context.Releases;
     }
 }
