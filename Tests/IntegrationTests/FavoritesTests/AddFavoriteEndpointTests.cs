@@ -16,9 +16,9 @@ using Presentation.ResponseHandling.Response;
 
 namespace IntegrationTests.FavoritesTests;
 
-public class CreateFavoriteEndpointTests: BaseIntegrationTest
+public class AddFavoriteEndpointTests: BaseIntegrationTest
 {
-    public CreateFavoriteEndpointTests(IntegrationTestWebAppFactory factory)
+    public AddFavoriteEndpointTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
     }
@@ -52,7 +52,7 @@ public class CreateFavoriteEndpointTests: BaseIntegrationTest
         _genre.Id);
 
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnBadRequest_OnNullId()
+    public async Task AddFavoriteEndpoint_Should_ReturnBadRequest_OnNullId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -89,7 +89,7 @@ public class CreateFavoriteEndpointTests: BaseIntegrationTest
     }
 
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnUnauthorized_OnUnauthorizedAccess()
+    public async Task AddFavoriteEndpoint_Should_ReturnUnauthorized_OnUnauthorizedAccess()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -118,7 +118,7 @@ public class CreateFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnNotFound_OnNonexistentTrack()
+    public async Task AddFavoriteEndpoint_Should_ReturnNotFound_OnNonexistentTrack()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -151,7 +151,7 @@ public class CreateFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnConflict_OnAlreadyFavorite()
+    public async Task AddFavoriteEndpoint_Should_ReturnConflict_OnAlreadyFavorite()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -186,7 +186,7 @@ public class CreateFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task AddFavoriteEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();

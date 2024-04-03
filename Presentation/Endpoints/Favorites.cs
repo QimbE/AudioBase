@@ -28,8 +28,8 @@ public class Favorites : ICarterModule
 
         group.MapPost(
                 "AddFavorite",
-                async (HttpContext context, [FromQuery] Guid trackId, ISender sender
-                    , CancellationToken cancellationToken) =>
+                async (HttpContext context, [FromQuery] Guid trackId, ISender sender, 
+                    CancellationToken cancellationToken) =>
                 {
                     var userClaim = context.User.Claims.FirstOrDefault(claim =>claim.Type == ClaimTypes.NameIdentifier);
                     
@@ -38,7 +38,7 @@ public class Favorites : ICarterModule
                         return Results.Unauthorized();
                     }
                     
-                    var request = new CreateFavoriteCommand(new Guid(userClaim.Value), trackId);
+                    var request = new AddFavoriteCommand(new Guid(userClaim.Value), trackId);
                     
                     var result = await sender.Send(request, cancellationToken);
 

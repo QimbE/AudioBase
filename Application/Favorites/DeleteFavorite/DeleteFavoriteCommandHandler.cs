@@ -1,6 +1,8 @@
 using Application.DataAccess;
 using Domain.Favorites;
 using Domain.Favorites.Exceptions;
+using Domain.Tracks;
+using Domain.Tracks.Exceptions;
 using Domain.Users;
 using Domain.Users.Exceptions;
 using MediatR;
@@ -19,16 +21,10 @@ public class DeleteFavoriteCommandHandler: IRequestHandler<DeleteFavoriteCommand
     
     public async Task<Result<bool>> Handle(DeleteFavoriteCommand request, CancellationToken cancellationToken)
     {
-        User? user = _context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId).Result;
-
-        if (user is null)
-        {
-            return new(new UserNotFoundException());
-        }
-
-        var fav = _context.Favorites.FirstOrDefaultAsync(
-            f => f.UserId == user.Id && f.TrackId == request.TrackId,
-            cancellationToken).Result;
+        // There is no need to check whether user or track exists
+        var fav = await _context.Favorites.FirstOrDefaultAsync(
+            f => f.UserId == request.UserId && f.TrackId == request.TrackId,
+            cancellationToken);
         
         // Track should not be favorite already
         if (fav is null)

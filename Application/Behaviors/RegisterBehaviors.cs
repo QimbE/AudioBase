@@ -61,7 +61,7 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<CreateLabelCommand, bool>()
             .AddValidationBehavior<UpdateLabelCommand, bool>()
             .AddValidationBehavior<DeleteLabelCommand, bool>()
-            .AddValidationBehavior<CreateFavoriteCommand, bool>()
+            .AddValidationBehavior<AddFavoriteCommand, bool>()
             .AddValidationBehavior<DeleteFavoriteCommand, bool>();
     }
     

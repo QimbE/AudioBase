@@ -10,25 +10,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Favorites.CreateFavorite;
 
-public class CreateFavoriteCommandHandler: IRequestHandler<CreateFavoriteCommand, Result<bool>>
+public class AddFavoriteCommandHandler: IRequestHandler<AddFavoriteCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _context;
 
-    public CreateFavoriteCommandHandler(IApplicationDbContext context)
+    public AddFavoriteCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }
     
-    public async Task<Result<bool>> Handle(CreateFavoriteCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(AddFavoriteCommand request, CancellationToken cancellationToken)
     {
-        User? user = _context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId).Result;
+        User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
 
         if (user is null)
         {
             return new(new UserNotFoundException());
         }
         
-        Track? track = _context.Tracks.FirstOrDefaultAsync(t => t.Id == request.TrackId).Result;
+        Track? track = await _context.Tracks.FirstOrDefaultAsync(t => t.Id == request.TrackId);
 
         if (track is null)
         {

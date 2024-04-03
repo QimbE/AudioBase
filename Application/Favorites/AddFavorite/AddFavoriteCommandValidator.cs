@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace Application.Favorites.CreateFavorite;
 
-public class CreateFavoriteCommandValidator: AbstractValidator<CreateFavoriteCommand>
+public class AddFavoriteCommandValidator: AbstractValidator<AddFavoriteCommand>
 {
-    public CreateFavoriteCommandValidator()
+    public AddFavoriteCommandValidator()
     {
         RuleFor(cfc => cfc.UserId)
             .NotEmpty();
