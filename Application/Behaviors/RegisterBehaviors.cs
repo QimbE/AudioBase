@@ -66,6 +66,7 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<AddFavoriteCommand, bool>()
             .AddValidationBehavior<DeleteFavoriteCommand, bool>()
             .AddValidationBehavior<CreateReleaseCommand, bool>()
+            .AddValidationBehavior<UpdateArtistCommand, bool>()
             .AddValidationBehavior<DeleteReleaseCommand, bool>();
     }
     
