@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Releases.DeleteRelease;
 
-public class DeleteReleaseCommandValidator: AbstractValidator<DeleteArtistCommand>
+public class DeleteReleaseCommandValidator: AbstractValidator<DeleteReleaseCommand>
 {
     public DeleteReleaseCommandValidator()
     {

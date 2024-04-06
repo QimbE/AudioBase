@@ -17,6 +17,7 @@ using Application.Labels.DeleteLabel;
 using Application.Labels.UpdateLabel;
 using Application.Releases.CreateRelease;
 using Application.Releases.DeleteRelease;
+using Application.Releases.UpdateRelease;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
 using Application.Users.ForgotPassword;
@@ -66,7 +67,7 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<AddFavoriteCommand, bool>()
             .AddValidationBehavior<DeleteFavoriteCommand, bool>()
             .AddValidationBehavior<CreateReleaseCommand, bool>()
-            .AddValidationBehavior<UpdateArtistCommand, bool>()
+            .AddValidationBehavior<UpdateReleaseCommand, bool>()
             .AddValidationBehavior<DeleteReleaseCommand, bool>();
     }
     
