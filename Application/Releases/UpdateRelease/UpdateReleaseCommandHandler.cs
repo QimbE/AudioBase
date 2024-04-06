@@ -33,8 +33,14 @@ public class UpdateReleaseCommandHandler: IRequestHandler<UpdateReleaseCommand, 
             return new(new ReleaseWithSameNameException());
         }
 
+        DateOnly date;
+        if (!DateOnly.TryParseExact(request.ReleaseDate, "yyyy-MM-dd", out date))
+        {
+            return new(new FormatException());
+        }
+
         // Update release
-        releaseFromDb.Update(request.Name, request.CoverLink, request.AuthorId, request.TypeId, request.ReleaseDate);
+        releaseFromDb.Update(request.Name, request.CoverLink, request.AuthorId, request.TypeId, date);
 
         await _context.SaveChangesAsync(cancellationToken);
 
