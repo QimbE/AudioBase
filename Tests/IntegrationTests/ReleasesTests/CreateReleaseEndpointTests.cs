@@ -226,7 +226,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBaseResponse_OnLowUserRole()
+    public async Task CreateReleaseEndpoint_Should_ReturnForbidden_OnLowUserRole()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
