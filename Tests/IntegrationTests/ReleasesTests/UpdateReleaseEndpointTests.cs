@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Application.Authentication;
-using Application.Releases.CreateRelease;
+using Application.Releases.UpdateRelease;
 using Domain.Artists;
 using Domain.MusicReleases;
 using Domain.Tracks;
@@ -9,14 +9,13 @@ using Domain.Users;
 using FluentAssertions;
 using Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
-using Presentation.Endpoints;
 using Presentation.ResponseHandling.Response;
 
 namespace IntegrationTests.ReleasesTests;
 
-public class CreateReleaseEndpointTests: BaseIntegrationTest
+public class UpdateReleaseEndpointTests: BaseIntegrationTest
 {
-    public CreateReleaseEndpointTests(IntegrationTestWebAppFactory factory)
+    public UpdateReleaseEndpointTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
     }
@@ -29,14 +28,21 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     );
 
     private static readonly Artist _author = Artist.Create(
-        "Artist",
+        "Release",
         "Desc",
         "https://photo.link");
     
     private static readonly Genre _genre = Genre.Create("Rap");
+
+    private static readonly Release _release = Release.Create(
+        "Release",
+        "link",
+        _author.Id,
+        1,
+        new DateOnly(2011, 12, 12));
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task UpdateReleaseEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -49,16 +55,25 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", "CoverLink", "2011-12-12", _author.Id, 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            "link",
+            "2012-12-12",
+            _author.Id,
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -73,7 +88,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     [InlineData("")]
     [InlineData(" ")]
     [InlineData("0123456789 0123456789 0123456789 0123456789 0123456789 0123456789")] // Exceeds max size
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidName(string name)
+    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidName(string name)
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -86,16 +101,25 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand(name, "CoverLink", "2011-12-12", _author.Id, 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            name,
+            "link",
+            "2012-12-12",
+            _author.Id,
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -105,7 +129,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidCoverLink(string coverLink)
+    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidLink(string link)
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -118,16 +142,25 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", coverLink, "2011-12-12", _author.Id, 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            link,
+            "2012-12-12",
+            _author.Id,
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -139,7 +172,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     [InlineData("20111-12-12")]
     [InlineData("2011-1-12")]
     [InlineData("2011-12-1")]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidDateFormat(string date)
+    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidReleaseDate(string date)
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -152,23 +185,32 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", "CoverLink", date, _author.Id, 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            "link",
+            date,
+            _author.Id,
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnNullAuthorId()
+    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnNullAuthorId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -181,23 +223,32 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", "CoverLink", "date", new Guid(), 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            "link",
+            "2012-12-12",
+            new Guid(),
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnNonexistentAuthorId()
+    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnNonexistentAuthorId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -210,23 +261,32 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", "CoverLink", "2011-12-12", Guid.NewGuid(), 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            "link",
+            "2012-12-12",
+            Guid.NewGuid(), 
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidTypeId()
+    public async Task UpdateReleaseEndpoint_Should_ReturnNotFound_OnNonexistentReleaseTypeId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -239,36 +299,47 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
+        context.Releases.Add(_release);
+
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", "CoverLink", "2011-12-12", _author.Id, 10000);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            "link",
+            "2012-12-12",
+            _author.Id, 
+            10000);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnForbidden_OnLowUserRole()
+    public async Task UpdateReleaseEndpoint_Should_ReturnForbidden_OnLowUserRole()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
+        
         var newUser = User.Create("Name", "email@mail.com", "password123", Role.DefaultUser);
-        
+
         context.Users.Add(newUser);
 
         context.Artists.Add(_author);
 
         context.Genres.Add(_genre);
+
+        context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
         
@@ -276,17 +347,24 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("Name", "CoverLink", "2011-12-12", _author.Id, 1);
+        var request = new UpdateReleaseCommand(
+            _release.Id,
+            "NewRelease",
+            "link",
+            "2012-12-12",
+            _author.Id,
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnConflict_OnAlreadyExistentName()
+    public async Task UpdateReleaseEndpoint_Should_ReturnNotFound_OnNonexistentRelease()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -299,7 +377,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Genres.Add(_genre);
 
-        context.Releases.Add(Release.Create("OldName", "CoverLink", _author.Id, 1, new DateOnly(2001, 11, 11)));
+        context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
         
@@ -307,10 +385,62 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new CreateReleaseCommand("OldName", "NewCoverLink", "2011-11-11", _author.Id, 1);
+        var request = new UpdateReleaseCommand(
+            Guid.NewGuid(), 
+            "NewRelease",
+            "link",
+            "2012-12-12",
+            _author.Id,
+            1);
+            
         
         // Act
-        var response = await HttpClient.PostAsJsonAsync("Releases/CreateRelease", request);
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+    
+    [Fact]
+    public async Task UpdateReleaseEndpoint_Should_ReturnConflict_OnDuplicateName()
+    {
+        // Arrange
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        context.Users.Add(_user);
+
+        context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
+
+        context.Releases.Add(_release);
+
+        context.Releases.Add(Release.Create(
+            "NewName", 
+            _release.CoverLink, 
+            _release.AuthorId, 
+            _release.ReleaseTypeId,
+            _release.ReleaseDate));
+
+        await context.SaveChangesAsync();
+        
+        var accessToken = await jwtProvider.GenerateAccessToken(_user);
+        
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        
+        var request = new UpdateReleaseCommand(
+            _release.Id, 
+            "NewName",
+            "link",
+            "2012-12-12",
+            _author.Id,
+            1);
+            
+        
+        // Act
+        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);

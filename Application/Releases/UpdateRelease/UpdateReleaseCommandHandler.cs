@@ -1,4 +1,5 @@
 using Application.DataAccess;
+using Domain.Artists.Exceptions;
 using Domain.MusicReleases.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,18 @@ public class UpdateReleaseCommandHandler: IRequestHandler<UpdateReleaseCommand, 
         if (releaseWithSameName is not null && releaseWithSameName!=releaseFromDb)
         {
             return new(new ReleaseWithSameNameException());
+        }
+
+        var artistToFind = await _context.Artists.FirstOrDefaultAsync(a => a.Id == request.AuthorId);
+        if (artistToFind is null)
+        {
+            return new(new ArtistNotFoundException());
+        }
+
+        var typeToFind = await _context.ReleaseTypes.FirstOrDefaultAsync(rt => rt.Value == request.TypeId);
+        if (typeToFind is null)
+        {
+            return new(new ReleaseTypeNotFoundException());
         }
 
         DateOnly date;
