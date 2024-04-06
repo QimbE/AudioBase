@@ -14,7 +14,7 @@ public class CreateReleaseCommandValidatior: AbstractValidator<CreateReleaseComm
             .NotEmpty();
 
         RuleFor(r => r.ReleaseDate)
-            .NotNull();
+            .Matches(@"\d{4}-\d{2}-\d{2}");
 
         RuleFor(r => r.AuthorId)
             .NotEmpty();

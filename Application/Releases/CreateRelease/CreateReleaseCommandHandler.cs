@@ -26,7 +26,13 @@ public class CreateReleaseCommandHandler : IRequestHandler<CreateReleaseCommand,
             return new(new ReleaseWithSameNameException());
         }
 
-        var release = Release.Create(request.Name, request.CoverLink, request.AuthorId, request.TypeId, request.ReleaseDate);
+        DateOnly date;
+        if (!DateOnly.TryParseExact(request.ReleaseDate, "yyyy-MM-dd", out date))
+        {
+            return new(new FormatException());
+        }
+
+        var release = Release.Create(request.Name, request.CoverLink, request.AuthorId, request.TypeId, date);
 
         _context.Releases.Add(release);
 

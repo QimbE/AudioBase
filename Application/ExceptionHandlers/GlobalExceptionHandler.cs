@@ -21,6 +21,8 @@ public class GlobalExceptionHandler : IExceptionHandler
         (int statusCode, string message) = exception switch
         {
             //TODO: add more exceptions
+            
+            //FormatException => (StatusCodes.Status400BadRequest, exception.Message), - Not sure how to make this work
             _ => (StatusCodes.Status500InternalServerError, "Internal server error")
         };
 
