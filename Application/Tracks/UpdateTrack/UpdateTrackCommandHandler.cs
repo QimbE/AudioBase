@@ -1,29 +1,35 @@
 using Application.DataAccess;
 using Domain.MusicReleases.Exceptions;
-using Domain.Tracks;
 using Domain.Tracks.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.Json;
 
-namespace Application.Tracks.CreateTrack;
+namespace Application.Tracks.UpdateTrack;
 
-public class CreateTrackCommandHandler : IRequestHandler<CreateTrackCommand, Result<bool>>
+public class UpdateTrackCommandHandler: IRequestHandler<UpdateTrackCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _context;
 
-    public CreateTrackCommandHandler(IApplicationDbContext context)
+    public UpdateTrackCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }
-    
-    public async Task<Result<bool>> Handle(CreateTrackCommand request, CancellationToken cancellationToken)
+
+    public async Task<Result<bool>> Handle(UpdateTrackCommand request, CancellationToken cancellationToken)
     {
-        // Track name should be unique
-        if (await _context.Tracks.AnyAsync(
-                r => r.Name.ToLower() == request.Name.ToLower(),
-                cancellationToken)
-           )
+        var trackFromDb = await _context.Tracks.SingleOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
+        
+        // if there is no track with given id in DB
+        if (trackFromDb is null)
+        {
+            return new(new TrackNotFoundException(request.Id));
+        }
+        
+        // if track with same name is already in DB
+        var trackWithSameName = await _context.Tracks.SingleOrDefaultAsync(
+            r => r.Name.ToLower() == request.Name.ToLower(),
+            cancellationToken);
+        if (trackWithSameName is not null && trackWithSameName!=trackFromDb)
         {
             return new(new TrackWithSameNameException());
         }
@@ -39,15 +45,14 @@ public class CreateTrackCommandHandler : IRequestHandler<CreateTrackCommand, Res
         {
             return new(new GenreNotFoundException());
         }
-        
-        var track = Track.Create(
+
+        // Update track
+        trackFromDb.Update(
             request.Name, 
             request.AudioLink, 
             TimeSpan.Parse(request.Duration), 
             request.ReleaseId, 
             request.GenreId);
-
-        _context.Tracks.Add(track);
 
         await _context.SaveChangesAsync(cancellationToken);
 
