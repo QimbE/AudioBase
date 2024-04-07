@@ -21,6 +21,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         (int statusCode, string message) = exception switch
         {
             //TODO: add more exceptions
+            
             _ => (StatusCodes.Status500InternalServerError, "Internal server error")
         };
 

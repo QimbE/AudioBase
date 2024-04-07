@@ -15,6 +15,9 @@ using Application.Genres.RenameGenre;
 using Application.Labels.CreateLabel;
 using Application.Labels.DeleteLabel;
 using Application.Labels.UpdateLabel;
+using Application.Releases.CreateRelease;
+using Application.Releases.DeleteRelease;
+using Application.Releases.UpdateRelease;
 using Application.Users.ChangePassword;
 using Application.Users.ChangeRole;
 using Application.Users.ForgotPassword;
@@ -62,7 +65,10 @@ internal static class RegisterBehaviors
             .AddValidationBehavior<UpdateLabelCommand, bool>()
             .AddValidationBehavior<DeleteLabelCommand, bool>()
             .AddValidationBehavior<AddFavoriteCommand, bool>()
-            .AddValidationBehavior<DeleteFavoriteCommand, bool>();
+            .AddValidationBehavior<DeleteFavoriteCommand, bool>()
+            .AddValidationBehavior<CreateReleaseCommand, bool>()
+            .AddValidationBehavior<UpdateReleaseCommand, bool>()
+            .AddValidationBehavior<DeleteReleaseCommand, bool>();
     }
     
     /// <summary>
