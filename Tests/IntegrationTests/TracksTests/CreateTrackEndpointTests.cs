@@ -24,7 +24,7 @@ public class CreateTrackEndpointTests: BaseIntegrationTest
         "Test",
         "test@test.ru",
         "123123",
-        Role.List.First()
+        Role.CatalogAdmin
     );
     
     private (Release, Artist) GetRelease  {
