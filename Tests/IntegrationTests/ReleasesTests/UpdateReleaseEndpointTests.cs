@@ -31,8 +31,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         "Release",
         "Desc",
         "https://photo.link");
-    
-    private static readonly Genre _genre = Genre.Create("Rap");
 
     private static readonly Release _release = Release.Create(
         "Release",
@@ -52,8 +50,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -99,8 +95,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
@@ -139,8 +133,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -183,8 +175,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
@@ -220,8 +210,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -259,8 +247,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
@@ -296,8 +282,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -337,8 +321,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
@@ -375,8 +357,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
@@ -412,8 +392,6 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
