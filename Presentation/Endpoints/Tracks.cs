@@ -1,4 +1,5 @@
 using Application.Tracks.CreateTrack;
+using Application.Tracks.DeleteTrack;
 using Carter;
 using Domain.Users;
 using Infrastructure.Authentication.Extensions;
@@ -36,5 +37,21 @@ public class Tracks: ICarterModule
             .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Creates a new track");
+        
+        group.MapDelete(
+                "DeleteTrack",
+                async ([FromBody] DeleteTrackCommand request, ISender sender,
+                    CancellationToken cancellationToken) =>
+                {
+                    var result = await sender.Send(request, cancellationToken);
+
+                    return await result.MapToResponse(cancellationToken);
+                })
+            .UserShouldBeAtLeast(Role.CatalogAdmin)
+            .Produces<Ok<BaseResponse>>()
+            .Produces<BadRequest>(StatusCodes.Status400BadRequest)
+            .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
+            .WithSummary("Deletes track");
     }
 }
