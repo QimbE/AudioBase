@@ -112,4 +112,17 @@ public class Endpoint
     {
         return context.Releases;
     }
+    
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [Authorize(nameof(Role.DefaultUser))]
+    public async Task<IQueryable<Track>> GetTracks(
+        [Service(ServiceKind.Resolver)] IApplicationDbContext context,
+        CancellationToken cancellationToken
+    )
+    {
+        return context.Tracks;
+    }
 }
