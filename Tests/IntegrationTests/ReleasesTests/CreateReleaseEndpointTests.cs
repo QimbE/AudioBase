@@ -28,7 +28,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         Role.List.First()
     );
 
-    private static readonly Artist _author = Artist.Create(
+    private readonly Artist _author = Artist.Create(
         "Artist",
         "Desc",
         "https://photo.link");
@@ -185,7 +185,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnNonexistentAuthorId()
+    public async Task CreateReleaseEndpoint_Should_ReturnNotFound_OnNonexistentAuthorId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
