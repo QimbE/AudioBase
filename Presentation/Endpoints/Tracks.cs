@@ -36,6 +36,7 @@ public class Tracks: ICarterModule
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
+            .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Creates a new track");
         
