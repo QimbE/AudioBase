@@ -28,12 +28,10 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         Role.List.First()
     );
 
-    private static readonly Artist _author = Artist.Create(
+    private readonly Artist _author = Artist.Create(
         "Artist",
         "Desc",
         "https://photo.link");
-    
-    private static readonly Genre _genre = Genre.Create("Rap");
     
     [Fact]
     public async Task CreateReleaseEndpoint_Should_ReturnBaseResponse_OnValidRequest()
@@ -46,8 +44,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         await context.SaveChangesAsync();
         
@@ -84,8 +80,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
@@ -115,8 +109,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         await context.SaveChangesAsync();
         
@@ -150,8 +142,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
@@ -179,8 +169,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(_user);
@@ -197,7 +185,7 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateReleaseEndpoint_Should_ReturnBadRequest_OnNonexistentAuthorId()
+    public async Task CreateReleaseEndpoint_Should_ReturnNotFound_OnNonexistentAuthorId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -207,8 +195,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         await context.SaveChangesAsync();
         
@@ -236,8 +222,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         await context.SaveChangesAsync();
         
@@ -268,8 +252,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
 
         context.Artists.Add(_author);
 
-        context.Genres.Add(_genre);
-
         await context.SaveChangesAsync();
         
         var accessToken = await jwtProvider.GenerateAccessToken(newUser);
@@ -296,8 +278,6 @@ public class CreateReleaseEndpointTests: BaseIntegrationTest
         context.Users.Add(_user);
 
         context.Artists.Add(_author);
-
-        context.Genres.Add(_genre);
 
         context.Releases.Add(Release.Create("OldName", "CoverLink", _author.Id, 1, new DateOnly(2001, 11, 11)));
 

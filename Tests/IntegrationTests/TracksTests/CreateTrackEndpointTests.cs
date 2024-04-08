@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Application.Authentication;
-using Application.Releases.UpdateRelease;
+using Application.Tracks.CreateTrack;
 using Domain.Artists;
 using Domain.MusicReleases;
 using Domain.Tracks;
@@ -11,11 +11,11 @@ using Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.ResponseHandling.Response;
 
-namespace IntegrationTests.ReleasesTests;
+namespace IntegrationTests.TracksTests;
 
-public class UpdateReleaseEndpointTests: BaseIntegrationTest
+public class CreateTrackEndpointTests: BaseIntegrationTest
 {
-    public UpdateReleaseEndpointTests(IntegrationTestWebAppFactory factory)
+    public CreateTrackEndpointTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
     }
@@ -24,32 +24,41 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         "Test",
         "test@test.ru",
         "123123",
-        Role.List.First()
+        Role.CatalogAdmin
     );
-
-    private static readonly Artist _author = Artist.Create(
-        "Release",
-        "Desc",
-        "https://photo.link");
-
-    private static readonly Release _release = Release.Create(
-        "Release",
-        "link",
-        _author.Id,
-        1,
-        new DateOnly(2011, 12, 12));
+    
+    private (Release, Artist) GetRelease  {
+        get
+        {
+            var art = Artist.Create(
+                "Release",
+                "Desc",
+                "https://photo.link");
+            var rel = Release.Create(
+                "Release",
+                "link",
+                art.Id,
+                1,
+                new DateOnly(2011, 12, 12));
+            return (rel, art);
+        }
+    }
+    
+    private readonly Genre _genre = Genre.Create("Rap");
     
     [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task CreateTrackEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
-
+        var (_release, _author) = GetRelease;
+        
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -59,17 +68,15 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            "link",
-            "2012-12-12",
-            _author.Id,
-            1);
-            
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            "00:02:54", 
+            _release.Id, 
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -84,16 +91,18 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
     [InlineData("")]
     [InlineData(" ")]
     [InlineData("0123456789 0123456789 0123456789 0123456789 0123456789 0123456789")] // Exceeds max size
-    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidName(string name)
+    public async Task CreateTrackEndpoint_Should_ReturnBadRequest_OnInvalidName(string name)
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -103,17 +112,15 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            name,
-            "link",
-            "2012-12-12",
-            _author.Id,
-            1);
-            
+        var request = new CreateTrackCommand(
+            name, 
+            "AudioLink", 
+            "00:02:54", 
+            _release.Id, 
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -123,16 +130,18 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidLink(string link)
+    public async Task CreateTrackEndpoint_Should_ReturnBadRequest_OnInvalidAudioLink(string link)
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -142,38 +151,39 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            link,
-            "2012-12-12",
-            _author.Id,
-            1);
-            
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            link, 
+            "00:02:54", 
+            _release.Id, 
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Theory]
-    [InlineData("2011-12-121")]
-    [InlineData("2011-121-12")]
-    [InlineData("20111-12-12")]
-    [InlineData("2011-1-12")]
-    [InlineData("2011-12-1")]
-    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnInvalidReleaseDate(string date)
+    [InlineData("00:01:2")]
+    [InlineData("00:1:22")]
+    [InlineData("1:01:22")]
+    [InlineData("00:01:102")]
+    [InlineData("00:102:102")]
+    [InlineData("000:01:10")]
+    public async Task CreateTrackEndpoint_Should_ReturnBadRequest_OnInvalidDuration(string duration)
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -183,33 +193,33 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            "link",
-            date,
-            _author.Id,
-            1);
-            
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            duration, 
+            _release.Id, 
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnNullAuthorId()
+    public async Task CreateTrackEndpoint_Should_ReturnBadRequest_OnNullReleaseId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -219,33 +229,33 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            "link",
-            "2012-12-12",
-            new Guid(),
-            1);
-            
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            "00:12:01", 
+            new Guid(), 
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnBadRequest_OnNonexistentAuthorId()
+    public async Task CreateTrackEndpoint_Should_ReturnBadRequest_OnNullGenreId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -255,71 +265,35 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            "link",
-            "2012-12-12",
-            Guid.NewGuid(), 
-            1);
-            
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            "00:12:01", 
+            _release.Id, 
+            new Guid());
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     
     [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnNotFound_OnNonexistentReleaseTypeId()
+    public async Task CreateTrackEndpoint_Should_ReturnForbidden_OnLowUserRole()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
-
-        context.Artists.Add(_author);
-
-        context.Releases.Add(_release);
-
-        await context.SaveChangesAsync();
-        
-        var accessToken = await jwtProvider.GenerateAccessToken(_user);
-        
-        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
-        
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            "link",
-            "2012-12-12",
-            _author.Id, 
-            10000);
-            
-        
-        // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
-        
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-    
-    [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnForbidden_OnLowUserRole()
-    {
-        // Arrange
-        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
-
-        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
         var newUser = User.Create("Name", "email@mail.com", "password123", Role.DefaultUser);
 
-        context.Users.Add(newUser);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -329,33 +303,33 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
-            _release.Id,
-            "NewRelease",
-            "link",
-            "2012-12-12",
-            _author.Id,
-            1);
-            
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            "00:02:54", 
+            _release.Id, 
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
     
     [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnNotFound_OnNonexistentRelease()
+    public async Task CreateTrackEndpoint_Should_ReturnNotFound_OnNonexistentReleaseId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -365,42 +339,35 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            "00:02:54", 
             Guid.NewGuid(), 
-            "NewRelease",
-            "link",
-            "2012-12-12",
-            _author.Id,
-            1);
-            
+            _genre.Id);
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
     [Fact]
-    public async Task UpdateReleaseEndpoint_Should_ReturnConflict_OnDuplicateName()
+    public async Task CreateTrackEndpoint_Should_ReturnNotFound_OnNonexistentGenreId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        context.Users.Add(_user);
+        var (_release, _author) = GetRelease;
 
         context.Artists.Add(_author);
 
-        context.Releases.Add(_release);
+        context.Genres.Add(_genre);
 
-        context.Releases.Add(Release.Create(
-            "NewName", 
-            _release.CoverLink, 
-            _release.AuthorId, 
-            _release.ReleaseTypeId,
-            _release.ReleaseDate));
+        context.Releases.Add(_release);
 
         await context.SaveChangesAsync();
         
@@ -408,17 +375,59 @@ public class UpdateReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new UpdateReleaseCommand(
+        var request = new CreateTrackCommand(
+            "TrackName", 
+            "AudioLink", 
+            "00:02:54", 
             _release.Id, 
-            "NewName",
-            "link",
-            "2012-12-12",
-            _author.Id,
-            1);
-            
+            Guid.NewGuid());
         
         // Act
-        var response = await HttpClient.PutAsJsonAsync("Releases/UpdateRelease", request);
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
+        
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+    
+    [Fact]
+    public async Task CreateTrackEndpoint_Should_ReturnConflict_OnDuplicateName()
+    {
+        // Arrange
+        var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
+
+        var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        var (_release, _author) = GetRelease;
+
+        context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
+
+        context.Releases.Add(_release);
+
+        var track = Track.Create("TrackName",
+            "AudioLink",
+            new TimeSpan(0, 0, 12),
+            _release.Id,
+            _genre.Id);
+
+        context.Tracks.Add(track);
+
+        await context.SaveChangesAsync();
+        
+        var accessToken = await jwtProvider.GenerateAccessToken(_user);
+        
+        HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
+        
+        var request = new CreateTrackCommand(
+            track.Name, 
+            "NewAudioLink", 
+            "00:02:54", 
+            _release.Id, 
+            _genre.Id);
+        
+        // Act
+        var response = await HttpClient.PostAsJsonAsync("Tracks/CreateTrack", request);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);

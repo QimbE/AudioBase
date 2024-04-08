@@ -1,6 +1,6 @@
-using Application.Releases.CreateRelease;
-using Application.Releases.DeleteRelease;
-using Application.Releases.UpdateRelease;
+using Application.Tracks.CreateTrack;
+using Application.Tracks.DeleteTrack;
+using Application.Tracks.UpdateTrack;
 using Carter;
 using Domain.Users;
 using Infrastructure.Authentication.Extensions;
@@ -15,34 +15,34 @@ using Presentation.ResponseHandling.Response;
 
 namespace Presentation.Endpoints;
 
-public class Releases: ICarterModule
+public class Tracks: ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup(nameof(Releases))
-            .WithTags(nameof(Releases))
+        var group = app.MapGroup(nameof(Tracks))
+            .WithTags(nameof(Tracks))
             .WithOpenApi();
-        
+
         group.MapPost(
-            "CreateRelease",
-            async ([FromBody] CreateReleaseCommand request, ISender sender, 
-                CancellationToken cancellationToken) =>
-            {
-                var result = await sender.Send(request, cancellationToken);
+                "CreateTrack",
+                async ([FromBody] CreateTrackCommand request, ISender sender, 
+                    CancellationToken cancellationToken) =>
+                {
+                    var result = await sender.Send(request, cancellationToken);
                 
-                return await result.MapToResponse(cancellationToken);
-            })
+                    return await result.MapToResponse(cancellationToken);
+                })
             .UserShouldBeAtLeast(Role.CatalogAdmin)
             .Produces<Ok<BaseResponse>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
             .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
-            .WithSummary("Creates a new release");
+            .WithSummary("Creates a new track");
         
         group.MapPut(
-                "UpdateRelease",
-                async ([FromBody] UpdateReleaseCommand request, ISender sender,
+                "UpdateTrack",
+                async ([FromBody] UpdateTrackCommand request, ISender sender,
                     CancellationToken cancellationToken) =>
                 {
                     var result = await sender.Send(request, cancellationToken);
@@ -55,11 +55,11 @@ public class Releases: ICarterModule
             .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
             .Produces<NotFound>(StatusCodes.Status404NotFound)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
-            .WithSummary("Updates data of existing release");
+            .WithSummary("Updates data of existing track");
         
         group.MapDelete(
-                "DeleteRelease",
-                async ([FromBody] DeleteReleaseCommand request, ISender sender,
+                "DeleteTrack",
+                async ([FromBody] DeleteTrackCommand request, ISender sender,
                     CancellationToken cancellationToken) =>
                 {
                     var result = await sender.Send(request, cancellationToken);
@@ -71,6 +71,6 @@ public class Releases: ICarterModule
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<ForbidHttpResult>(StatusCodes.Status403Forbidden)
             .Produces<NotFound>(StatusCodes.Status404NotFound)
-            .WithSummary("Deletes release");
+            .WithSummary("Deletes track");
     }
 }

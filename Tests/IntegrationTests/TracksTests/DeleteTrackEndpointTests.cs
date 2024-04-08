@@ -1,22 +1,21 @@
 using System.Net;
 using System.Net.Http.Json;
 using Application.Authentication;
-using Application.Releases.DeleteRelease;
+using Application.Tracks.DeleteTrack;
 using Domain.Artists;
 using Domain.MusicReleases;
 using Domain.Tracks;
 using Domain.Users;
 using FluentAssertions;
 using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.ResponseHandling.Response;
 
-namespace IntegrationTests.ReleasesTests;
+namespace IntegrationTests.TracksTests;
 
-public class DeleteReleaseEndpointTests: BaseIntegrationTest
+public class DeleteTrackEndpointTests: BaseIntegrationTest
 {
-    public DeleteReleaseEndpointTests(IntegrationTestWebAppFactory factory)
+    public DeleteTrackEndpointTests(IntegrationTestWebAppFactory factory)
         : base(factory)
     {
     }
@@ -25,33 +24,51 @@ public class DeleteReleaseEndpointTests: BaseIntegrationTest
         "Test",
         "test@test.ru",
         "123123",
-        Role.List.First()
+        Role.CatalogAdmin
     );
-
-    private static readonly Artist _author = Artist.Create(
-        "Release",
-        "Desc",
-        "https://photo.link");
-
-    private static readonly Release _release = Release.Create(
-        "Release",
-        "link",
-        _author.Id,
-        1,
-        new DateOnly(2011, 12, 12));
+    
+    private (Release, Artist) GetRelease  {
+        get
+        {
+            var art = Artist.Create(
+                "Release",
+                "Desc",
+                "https://photo.link");
+            var rel = Release.Create(
+                "Release",
+                "link",
+                art.Id,
+                1,
+                new DateOnly(2011, 12, 12));
+            return (rel, art);
+        }
+    }
+    
+    private readonly Genre _genre = Genre.Create("Rap");
     
     [Fact]
-    public async Task DeleteReleaseEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task DeleteTrackEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
+        // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        context.Users.Add(_user);
 
+        var (_release, _author) = GetRelease;
+        
         context.Artists.Add(_author);
 
+        context.Genres.Add(_genre);
+
         context.Releases.Add(_release);
+        
+        var track = Track.Create("TrackName",
+            "AudioLink",
+            new TimeSpan(0, 0, 12),
+            _release.Id,
+            _genre.Id);
+
+        context.Tracks.Add(track);
 
         await context.SaveChangesAsync();
         
@@ -59,10 +76,10 @@ public class DeleteReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new DeleteReleaseCommand(_release.Id);
+        var request = new DeleteTrackCommand(track.Id);
         
         // Act
-        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Releases/DeleteRelease") { Content = JsonContent.Create(request) });
+        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Tracks/DeleteTrack") { Content = JsonContent.Create(request) });
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -70,22 +87,21 @@ public class DeleteReleaseEndpointTests: BaseIntegrationTest
         var content = await response.Content.ReadFromJsonAsync<BaseResponse>();
 
         content.Should().NotBeNull();
-        
-        var tryToFind = context.Releases.SingleOrDefaultAsync(r => r.Name == _release.Name).Result;
-
-        tryToFind.Should().BeNull();
     }
     
     [Fact]
-    public async Task DeleteReleaseEndpoint_Should_ReturnBadRequest_OnNullId()
+    public async Task DeleteTrackEndpoint_Should_ReturnBadRequest_OnNullId()
     {
+        // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        context.Users.Add(_user);
 
+        var (_release, _author) = GetRelease;
+        
         context.Artists.Add(_author);
+
+        context.Genres.Add(_genre);
 
         context.Releases.Add(_release);
 
@@ -95,33 +111,40 @@ public class DeleteReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new DeleteReleaseCommand(new Guid());
+        var request = new DeleteTrackCommand(new Guid());
         
         // Act
-        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Releases/DeleteRelease") { Content = JsonContent.Create(request) });
+        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Tracks/DeleteTrack") { Content = JsonContent.Create(request) });
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
-        var tryToFind = context.Releases.SingleOrDefaultAsync(r => r.Name == _release.Name).Result;
-
-        tryToFind.Should().NotBeNull();
     }
     
     [Fact]
-    public async Task DeleteReleaseEndpoint_Should_ReturnForbidden_OnLowUserRole()
+    public async Task DeleteTrackEndpoint_Should_ReturnForbidden_OnLowUserRole()
     {
+        // Arrange
         var newUser = User.Create("Name", "email@mail.com", "password123", Role.DefaultUser);
         
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        context.Users.Add(newUser);
 
+        var (_release, _author) = GetRelease;
+        
         context.Artists.Add(_author);
 
+        context.Genres.Add(_genre);
+
         context.Releases.Add(_release);
+        
+        var track = Track.Create("TrackName",
+            "AudioLink",
+            new TimeSpan(0, 0, 12),
+            _release.Id,
+            _genre.Id);
+
+        context.Tracks.Add(track);
 
         await context.SaveChangesAsync();
         
@@ -129,31 +152,38 @@ public class DeleteReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new DeleteReleaseCommand(_release.Id);
+        var request = new DeleteTrackCommand(track.Id);
         
         // Act
-        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Releases/DeleteRelease") { Content = JsonContent.Create(request) });
+        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Tracks/DeleteTrack") { Content = JsonContent.Create(request) });
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        
-        var tryToFind = context.Releases.SingleOrDefaultAsync(r => r.Name == _release.Name).Result;
-
-        tryToFind.Should().NotBeNull();
     }
     
     [Fact]
-    public async Task DeleteReleaseEndpoint_Should_ReturnNotFound_OnNonexistentRelease()
+    public async Task DeleteTrackEndpoint_Should_ReturnNotFound_OnNonexistentTrackId()
     {
+        // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
 
         var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        context.Users.Add(_user);
 
+        var (_release, _author) = GetRelease;
+        
         context.Artists.Add(_author);
 
+        context.Genres.Add(_genre);
+
         context.Releases.Add(_release);
+        
+        var track = Track.Create("TrackName",
+            "AudioLink",
+            new TimeSpan(0, 0, 12),
+            _release.Id,
+            _genre.Id);
+
+        context.Tracks.Add(track);
 
         await context.SaveChangesAsync();
         
@@ -161,16 +191,12 @@ public class DeleteReleaseEndpointTests: BaseIntegrationTest
         
         HttpClient.DefaultRequestHeaders.Add("Authorization", [$"Bearer {accessToken}"]);
         
-        var request = new DeleteReleaseCommand(Guid.NewGuid());
+        var request = new DeleteTrackCommand(Guid.NewGuid());
         
         // Act
-        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Releases/DeleteRelease") { Content = JsonContent.Create(request) });
+        var response = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "Tracks/DeleteTrack") { Content = JsonContent.Create(request) });
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        
-        var tryToFind = context.Releases.SingleOrDefaultAsync(r => r.Name == _release.Name).Result;
-
-        tryToFind.Should().NotBeNull();
     }
 }

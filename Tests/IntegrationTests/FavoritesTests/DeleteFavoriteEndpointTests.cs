@@ -50,7 +50,7 @@ public class DeleteFavoriteEndpointTests: BaseIntegrationTest
         _genre.Id);
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnBaseResponse_OnValidRequest()
+    public async Task DeleteFavoriteEndpoint_Should_ReturnBaseResponse_OnValidRequest()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -88,7 +88,7 @@ public class DeleteFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnBadRequest_OnNullId()
+    public async Task DeleteFavoriteEndpoint_Should_ReturnBadRequest_OnNullId()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -122,7 +122,7 @@ public class DeleteFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnUnauthorized_OnNotAuthorized()
+    public async Task DeleteFavoriteEndpoint_Should_ReturnUnauthorized_OnNotAuthorized()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -152,7 +152,7 @@ public class DeleteFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnNotFound_OnNonexistentTrack()
+    public async Task DeleteFavoriteEndpoint_Should_ReturnNotFound_OnNonexistentTrack()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
@@ -186,7 +186,7 @@ public class DeleteFavoriteEndpointTests: BaseIntegrationTest
     }
     
     [Fact]
-    public async Task CreateFavoriteEndpoint_Should_ReturnNotFound_OnWrongUser()
+    public async Task DeleteFavoriteEndpoint_Should_ReturnNotFound_OnWrongUser()
     {
         // Arrange
         var jwtProvider = Scope.ServiceProvider.GetRequiredService<IJwtProvider>();
