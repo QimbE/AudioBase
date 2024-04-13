@@ -27,19 +27,20 @@ public class EmailSender: IEmailSender
     
     public async Task SendVerificationEmail(User user)
     {
-        var (subject, body) = EmailMessageBodies.GetVerificationEmailContent(
-            user.Name,
-            _settings.VerificationPageUrl,
-            await _jwtProvider.GenerateVerificationToken(user)
-            );
-        var email = GetMessage(
-            _settings.DisplayName,
-            _settings.From,
-            user.Email,
-            subject,
-            body
-            );
-        SendMessage(email);
+        user.VerifyEmail();
+        // var (subject, body) = EmailMessageBodies.GetVerificationEmailContent(
+        //     user.Name,
+        //     _settings.VerificationPageUrl,
+        //     await _jwtProvider.GenerateVerificationToken(user)
+        //     );
+        // var email = GetMessage(
+        //     _settings.DisplayName,
+        //     _settings.From,
+        //     user.Email,
+        //     subject,
+        //     body
+        //     );
+        // SendMessage(email);
     }
 
     public async Task SendChangePasswordEmail(User user, string newPassword)

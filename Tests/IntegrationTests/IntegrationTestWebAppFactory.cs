@@ -70,6 +70,7 @@ public class IntegrationTestWebAppFactory
                 services.Remove(connectionMultiplexerDescriptor);
             }
 
+            // Removing whole background task infrastructure
             var backgroundTaskDescriptor = services
                 .SingleOrDefault(s => s.ServiceType == typeof(IHostedService) &&
                                       s.ImplementationType == typeof(QuartzHostedService)

@@ -37,7 +37,7 @@ public class Authentication: ICarterModule
                 return await result.MapToResponse(context, cancellationToken);
             })
             .AllowAnonymous()
-            .Produces<Ok<ResponseWithData<UserResponseDto>>>()
+            .Produces<Ok<ResponseWithData<BaseResponse>>>()
             .Produces<BadRequest>(StatusCodes.Status400BadRequest)
             .Produces<Conflict>(StatusCodes.Status409Conflict)
             .WithSummary("Registers new application user");

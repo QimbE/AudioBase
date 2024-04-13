@@ -62,6 +62,7 @@ public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<UserRespo
         return new UserResponse(
             userFromDb.Id,
             userFromDb.Name,
+            userFromDb.RoleId,
             accessToken,
             userFromDb.RefreshToken.Value
             );

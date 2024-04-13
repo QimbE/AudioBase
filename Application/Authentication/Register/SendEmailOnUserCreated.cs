@@ -37,5 +37,6 @@ public class SendEmailOnUserCreated: INotificationHandler<UserCreatedDomainEvent
         }
 
         await _emailSender.SendVerificationEmail(userFromDb);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
